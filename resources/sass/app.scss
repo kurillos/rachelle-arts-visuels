@@ -86,6 +86,33 @@ html, body {
   margin-left: auto;
 }
 
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-self: center;
+  padding: 10px 20px;
+  background-color: #1A1C20;
+  color: #13D4F5;
+  font-family: 'Charm', sans-serif;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}
+
+.footer-info {
+  color: #13D4F5;
+}
+
+.instagram-logo {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+}
+
+.icons {
+  display: flex;
+  align-items:center;
+}
 
 
 
