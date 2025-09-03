@@ -13,7 +13,8 @@ class CarouselController extends Controller
      */
     public function index()
     {
-        //
+        // retourne toutes les images du carousel
+        return Carousel::all();
     }
 
     /**
@@ -21,7 +22,16 @@ class CarouselController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Valide les données de la requête
+        $request->validate([
+            'image_url' => 'required|string',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $carousel = Carousel::create($request->all());
+
+        return response()->json($carousel, 201);
     }
 
     /**
@@ -29,7 +39,7 @@ class CarouselController extends Controller
      */
     public function show(Carousel $carousel)
     {
-        //
+        return $carousel;
     }
 
     /**
@@ -37,7 +47,15 @@ class CarouselController extends Controller
      */
     public function update(Request $request, Carousel $carousel)
     {
-        //
+        $request->validate([
+            'image_url' => 'required|string',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $carousel->update($request->all());
+
+        return response()->json($carousel, 200);
     }
 
     /**
@@ -45,6 +63,9 @@ class CarouselController extends Controller
      */
     public function destroy(Carousel $carousel)
     {
-        //
+        // Supprime l'entrée du carousel
+        $carousel->delete();
+
+        return response()->json(null, 204);
     }
 }
