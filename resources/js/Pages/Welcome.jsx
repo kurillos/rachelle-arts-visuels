@@ -1,6 +1,7 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Components/Custom/Navbar';
+import Footer from '@/Components/Custom/Footer';
 
 export default function Welcome({ auth }) {
     return (
@@ -12,6 +13,7 @@ export default function Welcome({ auth }) {
                     <h1 className="display-4 font-weight-bolder text-primary font-family-charm">Et si vous me faisiez confiance dès le début ?</h1>
                 </div>
             </div>
+            <Footer instagramUrl="/images/instagram_logo.png" />
         </>
     );
 }
