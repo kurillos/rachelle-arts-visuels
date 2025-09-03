@@ -1,0 +1,91 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/mixins";
+
+// Variables personnalisées
+@import "bootstrap/scss/variables";
+$primary: #AA11DD;
+$secondary: #13D4F5;
+$font-family-base: 'Charm', sans-serif;
+$font-family-title: 'Charmonman', sans-serif;
+
+@import "bootstrap/scss/bootstrap";
+
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Charmonman:wght@400;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: 'Charm', sans-serif;
+}
+
+.logo {
+  height: 80px;
+  width: 80px;
+  object-fit: contain;
+}
+
+.navbar-brand span {
+  font-family: 'Charmonman', cursive;
+  font-size: 2rem;
+  color: $primary;
+}
+
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  margin-left: 20px;
+}
+
+.nav-item .nav-link {
+  position: relative;
+  text-decoration: none;
+  color: $primary;
+  font-size: 1.5rem;
+  transition: color 0.3s;
+  font-family: 'Charm', sans-serif;
+}
+
+.nav-item .nav-link:hover {
+  color: $secondary;
+}
+
+.nav-item .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 3px;
+  background-color: $primary;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: width 0.5s ease-in-out;
+}
+
+.nav-item .nav-link:hover::after {
+  width: 100%;
+}
+
+.dropdown-item {
+  color: $secondary;
+}
+
+.auth-links {
+  margin-left: auto;
+}
+
+
+
+
