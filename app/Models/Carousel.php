@@ -10,12 +10,12 @@ class Carousel extends Model
     use HasFactory;
 
     /**
-     * Le nom de la collection associée au modèle.
+     * The attributes that are mass assignable.
      * 
      * @var array<int, string>
      */
     protected $fillable = [
-        'image_url',
+        'image_path',
         'title',
         'description',
     ];
