@@ -32,13 +32,11 @@ const Navbar = ({ auth }) => {
                         <li className="nav-item">
                             <Link className="nav-link" href={route('contact')}>Contact</Link>
                         </li>
-                        {/* Affiche le lien de connexion si l'utilisateur n'est pas connecté */}
                         {!isAuthenticated && (
                             <li className="nav-item">
                                 <Link className="nav-link" href={route('login')}>Connexion</Link>
                             </li>
                         )}
-                        {/* Affiche le lien du tableau de bord si l'utilisateur est connecté */}
                         {isAuthenticated && (
                             <li className="nav-item">
                                 <Link className="nav-link" href={route('dashboard')}>Tableau de bord</Link>

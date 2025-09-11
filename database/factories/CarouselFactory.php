@@ -14,8 +14,6 @@ class CarouselFactory extends Factory
      */
     public function definition(): array
     {
-        // Générer un chemin d'image local qui sera traité par l'accesseur du modèle
-        // Assurez-vous d'avoir des images dans le dossier public/images/carousels
         $imagePath = 'images/carousels/' . $this->faker->numberBetween(1, 6) . '.jpg';
         
         return [

@@ -10,7 +10,6 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 export default function Welcome({ auth, carousels }) {
     console.log('Rendering Welcome page with carousels:', carousels);
     
-    // Vérifier si la variable carousels est définie et est un tableau
     const carouselData = Array.isArray(carousels) ? carousels : [];
 
     return (
@@ -20,14 +19,10 @@ export default function Welcome({ auth, carousels }) {
                 <Navbar auth={auth} />
                 <main className="flex-grow-1 p-4">
                     <div className="container mt-5">
-                        <h1 className="text-center mb-4">Bienvenue sur Rachelle Arts Visuels</h1>
-                        <p className="lead text-center">
-                            Découvrez la beauté de l'art à travers notre galerie.
-                        </p>
+                        <h2 className="text-center mb-4 text-primary-home">Et si vous me faisiez confiance dès le début ?</h2>
                     </div>
                     <div className="container mt-5 carousel-container">
-                        {/* Passer les données du carrousel au composant Carousel */}
-                        <Carousel carousels={carouselData} />
+                        <Carousel carousels={carouselData} auth={auth} />
                     </div>
                 </main>
                 <Footer />

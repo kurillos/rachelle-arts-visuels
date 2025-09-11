@@ -1,9 +1,8 @@
 import React from 'react';
 
-export default function Carousel({ carousels }) {
-    const carouselId = "carouselExampleIndicators";
+export default function Carousel({ carousels, auth }) {
+    const carouselId = "carouselHomepage";
 
-    // Assurez-vous que les données du carrousel sont un tableau.
     const carouselData = Array.isArray(carousels) ? carousels : [];
 
     return (
@@ -24,15 +23,22 @@ export default function Carousel({ carousels }) {
             <div className="carousel-inner">
                 {carouselData.map((carousel, index) => (
                     <div key={carousel.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
-                        <img src={`/storage/${carousel.image_path}`} className="d-block w-100" alt={carousel.title} />
-                        <div className="carousel-caption d-none d-md-block">
-                            <h5>{carousel.title}</h5>
-                            <p>{carousel.description}</p>
+                        <div className="carousel-image-container">
+                            <img src={`/storage/${carousel.image_path}`} className="d-block w-100" alt={carousel.title} />
+                            {auth.user && (
+                                <div className="carousel-overlay">
+                                    <button className="btn" title="Ajouter une slide">
+                                        <i className="bi bi-plus-circle"></i>
+                                    </button>
+                                    <button className="btn" title="Supprimer la slide">
+                                        <i className="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}
             </div>
-            
         </div>
     );
 }

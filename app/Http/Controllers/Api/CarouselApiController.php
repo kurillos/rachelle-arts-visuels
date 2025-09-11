@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class CarouselController extends Controller
 {
-    // ... méthode index()
     
     public function create()
     {
@@ -31,7 +30,6 @@ class CarouselController extends Controller
         // On retire le "public/" pour que l'accesseur du modèle fonctionne
         $relativePath = str_replace('public/', '', $path);
         
-        // Enregistrer les informations dans la base de données
         $carouselItem = new Carousel;
         $carouselItem->image_url = $relativePath;
         $carouselItem->title = $request->input('title');
