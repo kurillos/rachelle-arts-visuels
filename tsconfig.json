@@ -9,7 +9,11 @@
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "isolatedModules": true
+        "isolatedModules": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"]
+        }
     },
     "include": [
         "resources/js/**/*.ts",

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import Navbar from '@/Components/custom/Navbar';
-import Footer from '@/Components/custom/Footer';
+import Navbar from '@/Components/Custom/Navbar';
+import Footer from '@/Components/Custom/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 

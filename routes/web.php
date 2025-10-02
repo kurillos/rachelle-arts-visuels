@@ -5,13 +5,14 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
+use App\Http\Controllers\ContactController;
 
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'carousels' => Carousel::all()->values(), // Passe toutes les images du carrousel
+        'carousels' => Carousel::all()->values(),
     ]);
 })->name('welcome');
 
@@ -27,13 +28,14 @@ Route::get('/portfolio', function () {
     return Inertia::render('Portfolio');
 })->name('portfolio');
 
-Route::get('/contact', function () {
-    return Inertia::render('Contact');
-})->name('contact');
+Route::get('/contact', [ContactController::class, 'create'])->name('contact');
 
 Route::get('/reviews', function () {
     return Inertia::render('Reviews');
 })->name('reviews');
+
+Route::get('/contact', [ContactController::class, 'create'])->name('contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
 // Route pour le dashboard
 Route::get('/dashboard', function () {
@@ -44,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
 
     Route::get('/admin', function () {
         return Inertia::render('Admin');
@@ -55,4 +58,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-

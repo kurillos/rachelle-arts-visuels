@@ -448,13 +448,12 @@ img, .instagram-icon {
 // Styles pour la page Contact
 .main-container-contact {
     background-color: black;
+    min-height: calc(100vh - 200px);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    height: 100%;
     text-align: center;
-    margin-top: 125px;
 }
 
 .title-underline-contact {
@@ -480,16 +479,12 @@ img, .instagram-icon {
 }
 
 .about-title-contact {
-    display: flex;
-    justify-content: center;
     margin-top: 20px;
     color: #FFFFFF;
     font-family: $font-family-title;
 }
 
 .about-title-contact-text {
-    display: flex;
-    justify-content: center;
     margin-top: 20px;
     color: #FFFFFF;
     font-family: $font-family-base;
