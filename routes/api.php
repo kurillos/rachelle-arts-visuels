@@ -25,5 +25,4 @@ Route::post('/carousels', [CarouselApiController::class, 'store']);
 Route::get('/carousels/{carousel}', [CarouselApiController::class, 'show']);
 Route::put('/carousels/{carousel}', [CarouselApiController::class, 'update']);
 Route::delete('/carousels/{carousel}', [CarouselApiController::class, 'destroy']);
-Route::get('/contact', [ContactController::class, 'create'])->name('contact');
-Route::post('/api/contact', [ContactController::class, 'send'])->name('contact.send');
+

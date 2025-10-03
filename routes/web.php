@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Auth\RegisterController;
 
 
 Route::get('/', function () {
@@ -36,6 +37,12 @@ Route::get('/reviews', function () {
 
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
+Route::get('/register', [RegisterController::class, 'create'])
+    ->middleware('guest') // Seul les utilisateurs non authentifiés peuvent accéder à cette route    
+    ->name('register');
+Route::post('/register', [RegisterController::class, 'store'])
+    ->middleware('guest');
 
 // Route pour le dashboard
 Route::get('/dashboard', function () {
