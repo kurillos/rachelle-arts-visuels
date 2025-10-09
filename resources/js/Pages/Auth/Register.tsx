@@ -23,8 +23,14 @@ export default function Register() {
     }, []);
 
     const submit = (e: React.FormEvent) => {
-        e.preventDefaut();
-        post(route('register'));
+        e.preventDefault();
+        post(route('signup.store'));
+    };
+
+    // Logique inscription SSO (Social Sign-on)
+    const handleSsoLogin = (provider: string) => {
+        window.location.href = route('socialite.redirect', { provider});
+        alert('Vous êtes redirigé(e) vers ' + provider + ' pour vous inscrire.');
     };
 
     return (

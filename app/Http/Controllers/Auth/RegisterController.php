@@ -35,12 +35,16 @@ class RegisterController extends Controller
         // Valider les données entrantes
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|max:20',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ],
         // Messages d'erreur personnalisés
         [
             'name.required' => 'Le nom est obligatoire.',
+            'lastname.required' => 'Le prénom est obligatoire.',
+            'phone.required' => 'Le numéro de téléphone est obligatoire.',
             'email.required' => "L'adresse e-mail est obligatoire.",
             'email.email' => "L'adresse e-mail doit être valide.",
             'email.unique' => "Cette adresse e-mail est déjà utilisée.",
@@ -51,6 +55,8 @@ class RegisterController extends Controller
         // Créer un nouvel utilisateur
         User::create([
             'name' => $validated['name'],
+            'lastname' => $validated['lastname'],
+            'phone' => $validated['phone'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);

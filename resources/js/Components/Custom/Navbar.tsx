@@ -38,6 +38,9 @@ const Navbar: React.FC = () => {
                             <li className="nav-item">
                                 <Link className="nav-link" href="/reviews">Avis clients</Link>
                             </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" href={route('signup')}>Avis clients</Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
