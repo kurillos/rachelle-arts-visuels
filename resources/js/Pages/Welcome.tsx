@@ -18,6 +18,11 @@ export default function Welcome({ auth, carousels }) {
             <div className="d-flex flex-column min-vh-100">
                 <Navbar auth={auth} />
                 <main className="flex-grow-1 p-4">
+                    {auth.user && (
+                        <div className="container text-center my-4">
+                            <h2>Bonjour {auth.user.name}</h2>
+                        </div>
+                    )}
                     <div className="container mt-5">
                         <h2 className="text-center mb-4 text-primary-home">Et si vous me faisiez confiance dès le début ?</h2>
                     </div>

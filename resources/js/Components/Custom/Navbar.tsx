@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC<{ auth: any }> = ({ auth }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -38,9 +38,27 @@ const Navbar: React.FC = () => {
                             <li className="nav-item">
                                 <Link className="nav-link" href="/reviews">Avis clients</Link>
                             </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" href={route('signup')}>Avis clients</Link>
-                            </li>
+                            {auth.user ? (
+                                <>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" href={route('dashboard')}>Dashboard</Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" href={route('logout')} method="post" as="button">
+                                            Log Out
+                                        </Link>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" href={route('login')}>Log in</Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" href={route('register')}>Register</Link>
+                                    </li>
+                                </>
+                            )}
                         </ul>
                     </div>
                 </div>

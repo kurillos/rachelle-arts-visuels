@@ -55,7 +55,7 @@ export default function Register() {
                                     <span>Inscrivez-vous avec Google</span>
                                 </button>
 
-                                {/* Bouton Apple */}
+                                {/* Bouton Apple 
                                 <button
                                     type="button"
                                     className="btn btn-outline-dark sso-btn apple-btn"
@@ -64,8 +64,9 @@ export default function Register() {
                                     <img src="/images/apple-logo.png" alt="Apple" className="sso-logo" />
                                     <span>Inscrivez-vous avec Apple</span>
                                 </button>
+                                */}
 
-                                {/* Bouton Microsoft */}
+                                {/* Bouton Microsoft 
                                 <button
                                     type="button"
                                     className="btn btn-outline-dark sso-btn microsoft-btn"
@@ -74,6 +75,7 @@ export default function Register() {
                                     <img src="/images/microsoft-logo.png" alt="Microsoft" className="sso-logo" />
                                     <span>Inscrivez-vous avec Microsoft</span>
                                 </button>
+                                */}
 
                                 {/* Ligne de séparation */}
                                 <div className="d-flex align-items-center my-3">
