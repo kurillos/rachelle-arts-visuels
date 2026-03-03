@@ -23,41 +23,41 @@ class AdminDashboardController extends Controller
     /**
      * Gère l'upload de l'image vers Amazon S3.
      */
-    public function upload(Request $request)
-    {
-        // Validation du type de fichier pour la sécurité.
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp,tiff', 
-            'title' => 'nullable|string|max:200',
-            'description' => 'nullable|string|max:1000',
-        ]);
+public function upload(Request $request)
+{
+    $request->validate([
+        'images.*' => 'required|image|max:10000', 
+        'title' => 'nullable|string|max:100',
+    ]);
 
-        try {
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                
-                // On génère un nom unique pour éviter les conflits sur S3
-                $path = $file->store('public/carousels', 's3');
+    try {
+        if ($request->hasFile('images')) {
+            $files = $request->file('images');
+            // Si pas de titre, on utilise "image" par défaut
+            $baseTitle = $request->input('title') ?? 'image';
+            
+            // On regarde en base combien on en a déjà avec ce nom
+            $existingCount = \App\Models\Carousel::where('title', 'like', $baseTitle . '-%')->count();
 
-                $url = Storage::disk('s3')->url($path);
+            foreach ($files as $index => $file) {
+                $currentNumber = $existingCount + $index + 1;
+                $finalTitle = $baseTitle . '-' . $currentNumber;
 
-                Carousel::create([
+                $path = $file->store('carousels', 's3');
+                $url = \Illuminate\Support\Facades\Storage::disk('s3')->url($path);
+
+                \App\Models\Carousel::create([
                     'image_url' => $url,
                     'image_path' => $path,
-                    'title' => $request->input('title') ?? 'Nouvelle Photo HD',
-                    'description' => $request->input('description'),
+                    'title' => $finalTitle,
                 ]);
-
-                return redirect()->back()->with('success', 'Photo HD publiée sur le Cloud !');
             }
-        } catch (\Exception $e) {
-            \Log::error('Erreur Upload S3 : ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Le serveur a refusé le fichier (trop lourd ou problème de connexion).');
+            return back()->with('success', count($files) . ' photos envoyées sur S3 !');
         }
-
-        return redirect()->back();
+    } catch (\Exception $e) {
+        return back()->with('error', 'Erreur S3 : ' . $e->getMessage());
     }
-
+}
     /**
      * Supprime une image de la base de données et du Cloud S3.
      */

@@ -30,6 +30,7 @@
         "bootstrap": "^5.3.8",
         "lucide-react": "^0.575.0",
         "react-bootstrap": "^2.10.10",
-        "sass": "^1.91.0"
+        "sass": "^1.91.0",
+        "ziggy-js": "^2.6.1"
     }
 }

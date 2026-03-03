@@ -4,6 +4,7 @@
 /* 2. Tes Polices */
 @import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Charmonman:wght@400;700&display=swap');
 
+
 /* 3. Reset Global */
 * {
     margin: 0;
@@ -345,4 +346,99 @@ body {
     width: 100%;
     height: 100%;
     filter: invert(72%) sepia(91%) saturate(3073%) hue-rotate(166deg) brightness(101%) contrast(92%);
+}
+
+/* ADMIN */
+.admin-bg {
+    background-color: #f4f7f6;
+}
+
+.border-purple-admin {
+    border-top: 5px solid #AA11DD;
+}
+
+.border-cyan-admin {
+    border-top: 5px solid #13D4F5;
+}
+
+.bg-purple { background-color: #AA11DD; }
+.text-purple { color: #AA11DD; }
+.border-cyan { border-color: #13D4F5 !important; }
+.text-cyan { color: #13D4F5 !important; }
+.bg-cyan { background-color: #13D4F5; }
+
+.upload-zone {
+    border: 2px dashed #13D4F5;
+    transition: background 0.3s;
+}
+.upload-zone:hover {
+    background-color: #f0fdff !important;
+}
+
+.admin-dashboard-wrapper {
+    background-color: #fcfcfc;
+    font-family: 'Charm', sans-serif !important;
+}
+
+.admin-nav-gradient {
+    background: linear-gradient(90deg, #AA11DD 0%, #13D4F5 100%) !important;
+}
+
+.brand-cursive {
+    font-family: 'Charmonman', cursive !important;
+    font-size: 1.5rem;
+}
+
+.admin-title-cursive {
+    font-family: 'Charmonman', cursive !important;
+    color: #AA11DD;
+    border-bottom: 3px solid #13D4F5;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.badge-s3 {
+    background-color: #e3faff;
+    color: #0b7c8f;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.admin-card { border-radius: 20px !important; background: white; }
+.admin-card-header { background: #AA11DD; color: white; }
+
+.upload-zone-styled { cursor: pointer; }
+.zone-content {
+    border: 3px dashed #13D4F5;
+    background-color: #f8fdff;
+    transition: all 0.3s ease;
+}
+.zone-content:hover {
+    background-color: #eefbff;
+    border-color: #AA11DD;
+    transform: translateY(-2px);
+}
+
+.admin-input { border: 2px solid #eee !important; border-radius: 12px !important; }
+.btn-admin-action {
+    background-color: #AA11DD; color: white; border: none; border-radius: 12px; transition: all 0.3s;
+}
+
+/* Flèches du carrousel en violet uniquement */
+.custom-carousel-btn .carousel-control-prev-icon,
+.custom-carousel-btn .carousel-control-next-icon {
+    background-color: transparent;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23AA11DD'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+    width: 3rem;
+    height: 3rem;
+}
+
+/* fléche précédente */
+.custom-carousel-btn .carousel-control-prev-icon {
+    transform: rotate(180deg);
+}
+
+.custom-carousel-btn {
+    width: 5%;
 }

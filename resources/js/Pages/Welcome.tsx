@@ -1,37 +1,53 @@
-import React from 'react';
 import { Head } from '@inertiajs/react';
-import Navbar from '@/Components/Custom/Navbar';
+import Navbar from '@/Components/Custom/Navbar'; 
 import Footer from '@/Components/Custom/Footer';
-import Carousel from '@/Components/Custom/Carousel';
+import React from 'react';
 
-interface WelcomeProps {
-    auth: any;
-    carousels: any[];
+interface CarouselItem {
+    id: number;
+    image_url: string; 
+    title: string;
 }
 
-export default function Welcome({ auth, carousels }: WelcomeProps) {
-    const carouselData = Array.isArray(carousels) ? carousels : [];
-
+export default function Welcome({ auth, carousels = [] }: { auth: any, carousels: CarouselItem[] }) {
     return (
-        <div className="public-site">
-            <Head title="Accueil" />
-            
+        <>
+            <Head title="Artiste Photographe HD" />
             <Navbar auth={auth} />
-            
-            <main className="main-container text-center mt-5 flex-grow-1">
-                <div className="about-container">
-                    
-                    <h2 className="title-underline">
-                        Et si vous me faisiez confiance dès le début ?
-                    </h2>
-                    
-                    <div id="carouselHome">
-                         <Carousel carousels={carouselData} auth={auth} />
+
+        <main>
+            <div id="mainCarousel" className="carousel slide carousel-fade" data-bs-ride="carousel">
+                <div className="carousel-inner">
+                    {carousels.map((img, index) => (
+                        <div key={img.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
+                            <div className="vh-100 w-100 bg-white d-flex align-items-center justify-content-center">
+                            <img 
+                                src={img.image_url} 
+                                className="d-block mw-100 mh-100" 
+                                style={{ 
+                                    objectFit: 'contain',
+                                    maxHeight: '100vh' 
+                                }}
+                                alt={img.title} 
+                            />
+                        </div>
                     </div>
-                </div>
-            </main>
+                ))}
+            </div>
+
+            {/* Boutons Carousel */}
+            <button className="carousel-control-prev custom-carousel-btn" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Précédent</span>
+            </button>
+            <button className="carousel-control-next custom-carousel-btn" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Suivant</span>
+            </button>
+        </div>
+    </main>
 
             <Footer />
-        </div>
+        </>
     );
 }
