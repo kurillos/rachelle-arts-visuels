@@ -1,12 +1,17 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
-use App\Http\Controllers\ContactController;
 
+/*
+|--------------------------------------------------------------------------
+| Routes Publiques
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -28,33 +33,47 @@ Route::get('/portfolio', function () {
     return Inertia::render('Portfolio');
 })->name('portfolio');
 
-Route::get('/contact', [ContactController::class, 'create'])->name('contact');
-
 Route::get('/reviews', function () {
     return Inertia::render('Reviews');
 })->name('reviews');
 
+// Formulaire de contact
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
-// Route pour le dashboard
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| Routes Sécurisées (Dashboard & Admin S3)
+|--------------------------------------------------------------------------
+*/
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // Le dashboard par défaut de Breeze
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    // --- ESPACE ADMINISTRATION S3 ---
+    Route::prefix('admin')->group(function () {
+        
+        // Page principale de gestion du carrousel (Vue d'ensemble)
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        
+        // Page du formulaire de création
+        Route::get('/carousels/create', function () {
+            return Inertia::render('CreateCarousel');
+        })->name('carousels.create');
+
+        // Actions d'upload et de suppression S3
+        Route::post('/carousel/upload', [AdminDashboardController::class, 'upload'])->name('admin.carousel.upload');
+        Route::delete('/carousel/{id}', [AdminDashboardController::class, 'destroy'])->name('admin.carousel.destroy');
+    });
+
+    // Gestion du Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-
-    Route::get('/admin', function () {
-        return Inertia::render('Admin');
-    })->name('admin');
-    
-    Route::get('/admin/carousels/create', function () {
-        return Inertia::render('CreateCarousel');
-    })->name('carousels.create');
 });
 
 require __DIR__.'/auth.php';

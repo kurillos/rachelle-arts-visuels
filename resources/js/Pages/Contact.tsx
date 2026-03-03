@@ -1,125 +1,97 @@
 import React from 'react';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Head, useForm } from '@inertiajs/react';
 import Navbar from '@/Components/Custom/Navbar';
 import Footer from '@/Components/Custom/Footer';
-import InputError from '@/Components/InputError';
 
-const Contact = (props: { auth: any }) => {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
+const Contact: React.FC = () => {
+    const { data, setData, post, processing, errors } = useForm({
+        nom: '',
         email: '',
-        phone: '',
+        telephone: '',
         message: '',
     });
-    
-    const { flash } = usePage().props as any;
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/contact', {
-            onSuccess: () => reset(),
-            preserveScroll: true,
-        });
+        post('/contact'); // Ajuste l'URL selon ta route Laravel
     };
 
-    const inputClasses = `form-control form-control-dark bg-dark text-white border-white rounded-0 transition`;
-
     return (
-        <>
+        <div className="public-site d-flex flex-column min-vh-100 contact-dark-theme">
             <Head title="Contact" />
-            <Navbar auth={props.auth} />
-            <main className="main-container-contact" style={{ fontFamily: 'Georgia, serif' }}>
-                <h1 className="title-underline-contact text-center display-4 mb-4 mt-3" style={{ fontFamily: 'Dancing Script, cursive', fontSize: '3rem' }}>Parlez-moi de vos projets</h1>
-                <div className="row justify-content-center">
-                    <div className="col-lg-8 text-center">
-                        <p className="about-title-contact-text lead">
+            <Navbar />
+            
+            <main className="flex-grow-1 py-5">
+                <div className="container">
+                    <div className="text-center mb-5">
+                        <h1 className="title-underline text-white">Parlez-moi de vos projets</h1>
+                        <p className="mt-4 text-white italic contact-intro">
                             Vous recherchez un photographe ou graphiste freelance ? Ou bien même les deux pour vous accompagner de A à Z
                         </p>
-                        <p className="about-title-contact-text">
-                            Détaillez vos besoins et obtenez un devis gratuitement.<br />
-                            Contactez-moi par mail : <a href="mailto:rachelle.artsvisuels@gmail.com" className="text-info">rachelle.artsvisuels@gmail.com</a><br />
-                            Tout sera mis en œuvre pour assurer vos réalisations en respectant vos délais et cahiers des charges.<br />
-                            N'hésitez pas à me contacter pour toute demande d'informations.
-                        </p>
-                        <div className="form-container">
-                            <form onSubmit={handleSubmit} className="form-contact" noValidate>
-                                 {flash.success && (
-                                    <div className="alert alert-success mt-4 text-center" role="alert">
-                                        {flash.success}
-                                    </div>
-                                )}
-                                {flash.error && (
-                                    <div className="alert alert-danger mt-4 text-center" role="alert">
-                                        {flash.error}
-                                    </div>
-                                )}
-                                <div className="form-group mb-3">
-                                    <label htmlFor="name" className="form-label text-info">Nom :</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        id="name"
-                                        className={`${inputClasses} ${errors.name ? 'is-invalid' : ''}`}
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        required
+                        <div className="contact-info-text text-white mt-3">
+                            <p>Détaillez vos besoins et obtenez un devis gratuitement.</p>
+                            <p>Contactez-moi par mail : <span className="text-cyan">rachelle.artsvisuels@gmail.com</span></p>
+                            <p className="small">Tout sera mis en œuvre pour assurer vos réalisations en respectant vos délais et cahiers des charges.</p>
+                            <p>N'hésitez pas à me contacter pour toute demande d'informations.</p>
+                        </div>
+                    </div>
+
+                    <div className="row justify-content-center">
+                        <div className="col-md-6 col-lg-5">
+                            <form onSubmit={submit} className="contact-form">
+                                <div className="mb-4 text-center">
+                                    <label className="text-cyan mb-2">Nom :</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control-custom"
+                                        value={data.nom}
+                                        onChange={e => setData('nom', e.target.value)}
                                     />
-                                    <InputError message={errors.name} className="mt-2" />
                                 </div>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="email" className="form-label text-info">Email :</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        className={`${inputClasses} ${errors.email ? 'is-invalid' : ''}`}
+
+                                <div className="mb-4 text-center">
+                                    <label className="text-cyan mb-2">Email :</label>
+                                    <input 
+                                        type="email" 
+                                        className="form-control-custom"
                                         value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        required
+                                        onChange={e => setData('email', e.target.value)}
                                     />
-                                    <InputError message={errors.email} className="mt-2" />
                                 </div>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="phone" className="form-label text-info">Téléphone :</label>
-                                    <input
-                                        type="tel"
-                                        name="phone"
-                                        id="phone"
-                                        className={`${inputClasses} ${errors.phone ? 'is-invalid' : ''}`}
-                                        value={data.phone}
-                                        onChange={(e) => setData('phone', e.target.value)}
-                                        required
+
+                                <div className="mb-4 text-center">
+                                    <label className="text-cyan mb-2">Téléphone :</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control-custom"
+                                        value={data.telephone}
+                                        onChange={e => setData('telephone', e.target.value)}
                                     />
-                                    <InputError message={errors.phone} className="mt-2" />
                                 </div>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="message" className="form-label text-info">Message :</label>
-                                    <textarea
-                                        name="message"
-                                        id="message"
-                                        className={`${inputClasses} ${errors.message ? 'is-invalid' : ''} resize-none`}
-                                        value={data.message}
-                                        onChange={(e) => setData('message', e.target.value)}
+
+                                <div className="mb-4 text-center">
+                                    <label className="text-cyan mb-2">Message :</label>
+                                    <textarea 
                                         rows={4}
-                                        required
-                                    ></textarea>
-                                    <InputError message={errors.message} className="mt-2" />
+                                        className="form-control-custom"
+                                        value={data.message}
+                                        onChange={e => setData('message', e.target.value)}
+                                    />
                                 </div>
-                                <button
-                                    type="submit"
-                                    className="btn btn-lg btn-outline-info w-100 mt-4 mb-4"
-                                    disabled={processing}
-                                >
-                                    {processing ? 'Envoi en cours...' : 'Envoyer'}
-                                </button>
+
+                                <div className="text-center mt-5">
+                                    <button type="submit" className="btn-envoyez" disabled={processing}>
+                                        Envoyez
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </main>
+
             <Footer />
-        </>
+        </div>
     );
 };
 

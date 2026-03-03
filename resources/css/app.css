@@ -1,0 +1,348 @@
+/* 1. Import de Bootstrap (via Vite) */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* 2. Tes Polices */
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Charmonman:wght@400;700&display=swap');
+
+/* 3. Reset Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    font-family: 'Charm', sans-serif;
+    min-height: 100vh;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    padding-top: 120px;
+}
+
+/* 4. Navigation */
+.header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    z-index: 1000;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.logo {
+    height: 100px;
+    width: auto;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-left: 30px;
+}
+
+.nav-item .nav-link {
+    position: relative;
+    text-decoration: none;
+    color: #AA11DD;
+    font-size: 1.5rem;
+    transition: color 0.3s;
+    font-family: 'Charm', sans-serif;
+}
+
+.nav-item .nav-link:hover {
+    color: #13D4F5;
+}
+
+/* Trait d'animation sous les liens */
+.nav-item .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    background-color: #AA11DD;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: width 0.5s ease-in-out;
+}
+
+.nav-item .nav-link:hover::after {
+    width: 100%;
+}
+
+/* 5. Titres avec soulignement violet */
+.title-underline {
+    display: inline-block;
+    position: relative;
+    padding-bottom: 10px;
+    margin: 20px auto;
+    text-align: center;
+    font-family: 'Charmonman', sans-serif;
+    text-decoration: none;
+}
+
+.title-underline::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #AA11DD;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.public-site {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Page Mon Histoire */
+/* Le "Héro" Cyan */
+.about-content-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.about-intro-text {
+    font-family: 'Charm', sans-serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.presentation-block p {
+    font-family: 'Charm', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.about-content-wrapper .title-underline {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+/* Le bouton Violet par défaut */
+.btn-contact-container {
+    background-color: #AA11DD;
+    color: white;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-family: 'Charm', sans-serif;
+    font-size: 1.2rem;
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+/* Hover Cyan */
+.btn-contact-container:hover {
+    background-color: #13D4F5;
+    color: #1A1C20;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(19, 212, 245, 0.4);
+}
+
+/* Image de présentation */
+/* Le conteneur avec bord blanc */
+.about-img-container {
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    border: 10px solid white;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    flex-shrink: 0;
+}
+
+/* L'image à l'intérieur */
+.about-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Page Accompagnements */
+/* --- CARTES ACCOMPAGNEMENTS --- */
+
+.card-service {
+    background: linear-gradient(90deg, #13d4f5 0%, #aa11dd 100%);
+    border-radius: 30px;
+    border: none;
+    transition: transform 0.3s ease;
+    min-height: 550px; 
+    display: flex;
+    flex-direction: column;
+}
+
+.public-site .card-service h5 {
+    font-family: 'Charmonman', sans-serif;
+    color: black;
+    font-size: 1.8rem;
+    text-transform: capitalize; 
+    position: relative;
+    display: inline-block;
+    padding-bottom: 8px;
+}
+
+/* Le trait violet : Départ de la gauche */
+.card-service h5::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    background-color: #aa11dd;
+    bottom: 0;
+    left: 0; /* On fixe le départ à gauche */
+    transition: width 0.4s ease-in-out;
+}
+
+/* Au survol de la carte, le trait se déploie vers la droite */
+.card-service:hover h5::after {
+    width: 100%; 
+}
+
+/* Description en NOIR */
+.card-service p {
+    font-family: 'Charm', sans-serif;
+    color: black;
+    font-style: italic;
+    line-height: 1.5;
+    font-size: 1.15rem;
+}
+
+/* Le bouton "Voir la galerie" */
+.btn-galerie {
+    background-color: #aa11dd;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-family: 'Charm', sans-serif;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-galerie:hover {
+    background-color: #13d4f5;
+    color: #1a1c20;
+    transform: scale(1.05);
+}
+
+/* L'image à l'intérieur de la carte */
+.image-wrapper img {
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+/* Page Contact */
+/* Thème sombre pour la page contact */
+.contact-dark-theme {
+    background-color: #000000 !important;
+}
+
+.text-cyan {
+    color: #13D4F5 !important;
+    font-family: 'Charm', sans-serif;
+    font-size: 1.2rem;
+}
+
+.contact-intro {
+    font-family: 'Charm', sans-serif;
+    font-size: 1.3rem;
+    font-style: italic;
+}
+
+/* Style des Inputs */
+.form-control-custom {
+    width: 100%;
+    background-color: #FFFFFF !important;
+    border: none;
+    border-radius: 5px;
+    padding: 12px;
+    color: #000000 !important;
+    font-family: Arial, sans-serif;
+    outline: none;
+}
+
+/* Le bouton Envoyez */
+.btn-envoyez {
+    background-color: transparent;
+    color: #13D4F5;
+    border: 2px solid #13D4F5;
+    padding: 10px 50px;
+    border-radius: 8px;
+    font-family: 'Charm', sans-serif;
+    font-size: 1.4rem;
+    transition: all 0.3s ease;
+}
+
+.btn-envoyez:hover {
+    background-color: #13D4F5;
+    color: #000000;
+    box-shadow: 0 0 15px rgba(19, 212, 245, 0.5);
+}
+
+.contact-dark-theme .title-underline::after {
+    background-color: #AA11DD;
+}
+
+/* 7. Footer */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #1A1C20;
+    color: #13D4F5;
+    margin-top: auto;
+}
+
+.footer-info p {
+    color: #13D4F5;
+    margin: 0;
+}
+
+.icons {
+    width: 40px;
+    height: 40px;
+}
+
+.instagram-icon {
+    width: 100%;
+    height: 100%;
+    filter: invert(72%) sepia(91%) saturate(3073%) hue-rotate(166deg) brightness(101%) contrast(92%);
+}
