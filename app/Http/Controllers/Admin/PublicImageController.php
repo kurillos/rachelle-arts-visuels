@@ -14,7 +14,7 @@ class PublicImageController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Portfolio/Index', [
+        return Inertia::render('Admin/Portfolio/Index', [
             'images' => PublicImage::with(['category', 'tags'])->latest()->get(),
             'categories' => Category::all(),
             'tags' => Tag::all(),
@@ -42,5 +42,17 @@ class PublicImageController extends Controller
             'tags' => Tag::all(),
             'initialCategory' => $currentCategory ? $currentCategory->id : 'all'
         ]);
+    }
+
+    public function update(Request $request, PublicImage $image) {
+        $image->update([
+            'title' => $request->title,
+            'category_id' => $request->category_id
+        ]);
+    
+        // Synchronisation des tags
+        $image->tags()->sync($request->tag_ids);
+    
+        return back();
     }
 }

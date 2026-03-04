@@ -1,4 +1,6 @@
 import React from 'react';
+import Navbar from '@/Components/Custom/Navbar'; 
+import Footer from '@/Components/Custom/Footer';
 import { Link, usePage } from '@inertiajs/react';
 import { 
     LayoutDashboard, 
@@ -15,6 +17,7 @@ declare var route: any;
 
 interface Props {
     auth: any;
+    header?: React.ReactNode;
     children: React.ReactNode;
 }
 
@@ -22,7 +25,8 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
     const { url } = usePage();
 
     return (
-        <div className="admin-layout d-flex">
+        <div className="admin-layout d-flex min-vh-100">
+            <Navbar />
             {/* SIDEBAR GAUCHE */}
             <aside className="admin-sidebar shadow-sm bg-white" style={{ width: '280px', minHeight: '100vh', position: 'fixed' }}>
                 <div className="p-4 mb-4 border-bottom">
@@ -97,6 +101,7 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                     {children}
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Trash2, Upload, ImageIcon } from 'lucide-react';
+import { Trash2, Upload, ImageIcon, PlusCircle, Edit } from 'lucide-react';
 // @ts-ignore
 import { route } from 'ziggy-js';
 
@@ -13,18 +13,31 @@ interface Props {
 }
 
 export default function Index({ images, categories, tags, auth }: Props) {
-    // --- FORMULAIRE D'UPLOAD S3 ---
+    // --- ÉTATS ---
+    const [editingImage, setEditingImage] = useState<any>(null);
+
+    // --- FORMULAIRE D'AJOUT ---
     const { data, setData, post, processing, reset, errors } = useForm({
         title: '',
         category_id: '',
         image: null as File | null,
-        tag_ids: [] as number[], // IDs des tags sélectionnés
+        tag_ids: [] as number[],
+    });
+
+    // --- FORMULAIRE DE MODIFICATION ---
+    const { data: editData, setData: setEditData, patch, processing: editProcessing } = useForm({
+        title: '',
+        category_id: '',
+        tag_ids: [] as number[],
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('admin.portfolio.store'), {
-            onSuccess: () => reset(),
+            onSuccess: () => {
+                reset();
+                alert('Image publiée avec succès !');
+            },
         });
     };
 
@@ -34,119 +47,148 @@ export default function Index({ images, categories, tags, auth }: Props) {
         }
     };
 
+    const openEdit = (img: any) => {
+        setEditingImage(img);
+        setEditData({
+            title: img.title || '',
+            category_id: img.category_id.toString(), // On force en string pour le select
+            tag_ids: img.tags.map((t: any) => t.id),
+        });
+    };
+
+    const handleUpdate = (e: React.FormEvent) => {
+        e.preventDefault();
+        patch(route('admin.portfolio.update', editingImage.id), {
+            onSuccess: () => setEditingImage(null),
+        });
+    };
+
     return (
-        <AuthenticatedLayout
-            auth={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Gestion du Portfolio (S3)</h2>}
-        >
-            <Head title="Admin | Portfolio" />
+        <AuthenticatedLayout auth={auth}>
+            <Head title="Admin | Portfolio Public" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    
-                    {/* --- SECTION UPLOAD --- */}
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
-                        <h3 className="text-lg font-medium mb-4 flex align-items-center gap-2">
-                            <Upload size={20} /> Ajouter une nouvelle œuvre
-                        </h3>
-                        
-                        <form onSubmit={submit} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Fichier Image</label>
-                                    <input 
-                                        type="file" 
-                                        onChange={e => setData('image', e.target.files?.[0] || null)}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                    />
-                                    {errors.image && <div className="text-red-500 text-xs mt-1">{errors.image}</div>}
-                                </div>
+            <div className="container-fluid">
+                <div className="d-flex justify-content-between align-items-center mb-5">
+                    <div>
+                        <h1 className="admin-title-cursive display-5 text-purple mb-0">Portfolio Public</h1>
+                        <p className="text-muted">Gérez les images visibles sur la galerie principale.</p>
+                    </div>
+                </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Métier / Catégorie</label>
-                                    <select 
-                                        value={data.category_id}
-                                        onChange={e => setData('category_id', e.target.value)}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        <option value="">Sélectionner...</option>
-                                        {categories.map(cat => (
-                                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                {/* FORMULAIRE D'AJOUT */}
+                <div className="card shadow-sm border-0 rounded-4 mb-5">
+                    <div className="card-body p-4">
+                        <h5 className="card-title fw-bold text-purple mb-4 d-flex align-items-center">
+                            <PlusCircle size={20} className="me-2" /> Ajouter une œuvre sur S3
+                        </h5>
+                        <form onSubmit={submit} className="row g-3">
+                            <div className="col-lg-4 col-md-6">
+                                <label className="form-label small fw-bold">Image</label>
+                                <input type="file" className={`form-control ${errors.image ? 'is-invalid' : ''}`} onChange={e => setData('image', e.target.files?.[0] || null)} />
+                                {errors.image && <div className="invalid-feedback">{errors.image}</div>}
                             </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Univers / Tags</label>
-                                <div className="flex flex-wrap gap-2">
+                            <div className="col-lg-3 col-md-6">
+                                <label className="form-label small fw-bold">Catégorie</label>
+                                <select className="form-select" value={data.category_id} onChange={e => setData('category_id', e.target.value)}>
+                                    <option value="">Sélectionner...</option>
+                                    {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                </select>
+                            </div>
+                            <div className="col-lg-3 col-md-12">
+                                <label className="form-label small fw-bold">Titre (Optionnel)</label>
+                                <input type="text" className="form-control" value={data.title} onChange={e => setData('title', e.target.value)} />
+                            </div>
+                            <div className="col-lg-2 col-md-12 d-flex align-items-end">
+                                <button type="submit" disabled={processing} className="btn btn-purple w-100 rounded-pill py-2">
+                                    {processing ? 'Envoi...' : 'Publier'}
+                                </button>
+                            </div>
+                            <div className="col-12 mt-3">
+                                <div className="d-flex flex-wrap gap-2">
                                     {tags.map(tag => (
-                                        <label key={tag.id} className="inline-flex items-center bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-purple-100 transition-colors">
-                                            <input 
-                                                type="checkbox"
-                                                className="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500 mr-2"
-                                                checked={data.tag_ids.includes(tag.id)}
-                                                onChange={e => {
-                                                    const id = tag.id;
-                                                    setData('tag_ids', e.target.checked 
-                                                        ? [...data.tag_ids, id] 
-                                                        : data.tag_ids.filter(t => t !== id)
-                                                    );
-                                                }}
-                                            />
-                                            <span className="text-sm">{tag.name}</span>
-                                        </label>
+                                        <button key={tag.id} type="button" onClick={() => {
+                                            const id = tag.id;
+                                            setData('tag_ids', data.tag_ids.includes(id) ? data.tag_ids.filter(t => t !== id) : [...data.tag_ids, id]);
+                                        }} className={`btn btn-sm rounded-pill px-3 ${data.tag_ids.includes(tag.id) ? 'btn-purple' : 'btn-outline-purple'}`}>
+                                            {tag.name}
+                                        </button>
                                     ))}
                                 </div>
                             </div>
-
-                            <button 
-                                type="submit" 
-                                disabled={processing}
-                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none disabled:opacity-50"
-                            >
-                                {processing ? 'Téléchargement vers S3...' : 'Publier sur le Portfolio'}
-                            </button>
                         </form>
                     </div>
+                </div>
 
-                    {/* --- GRILLE DE GESTION --- */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {images.map((img) => (
-                            <div key={img.id} className="relative bg-white rounded-lg shadow group overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all">
-                                <img 
-                                    src={img.full_url} 
-                                    alt="" 
-                                    className="h-48 w-full object-cover"
-                                />
-                                <div className="p-2">
-                                    <p className="text-xs font-bold truncate">{img.category?.name || 'Sans catégorie'}</p>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                        {img.tags?.map((t: any) => (
-                                            <span key={t.id} className="text-[9px] bg-gray-200 px-1 rounded">#{t.name}</span>
-                                        ))}
-                                    </div>
+                {/* GRILLE MASONRY */}
+                <div className="masonry-container">
+                    {images.map((img) => (
+                        <div key={img.id} className="masonry-brick">
+                            <div className="portfolio-img-card shadow-sm position-relative group">
+                                <img src={img.full_url} className="img-fluid" alt={img.title} />
+                                <div className="position-absolute top-0 end-0 m-2 d-flex gap-2" style={{ zIndex: 10 }}>
+                                    <button type="button" onClick={() => openEdit(img)} className="btn btn-white btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-scale" style={{ width: '32px', height: '32px', backgroundColor: 'white', border: 'none' }}>
+                                        <Edit size={16} className="text-purple" />
+                                    </button>
+                                    <button type="button" onClick={() => handleDelete(img.id)} className="btn btn-danger btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-scale" style={{ width: '32px', height: '32px', border: 'none' }}>
+                                        <Trash2 size={16} />
+                                    </button>
                                 </div>
-                                
-                                {/* Overlay de suppression */}
-                                <button 
-                                    onClick={() => handleDelete(img.id)}
-                                    className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                                    title="Supprimer"
-                                >
-                                    <Trash2 size={14} />
-                                </button>
+                                <div className="p-2 bg-white border-top small">
+                                    <div className="fw-bold text-purple truncate">{img.category?.name}</div>
+                                </div>
                             </div>
-                        ))}
-                    </div>
-
-                    {images.length === 0 && (
-                        <div className="text-center py-12 bg-white rounded-lg shadow">
-                            <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                            <p className="mt-2 text-sm text-gray-500">Aucune photo dans votre bibliothèque S3.</p>
                         </div>
-                    )}
+                    ))}
                 </div>
             </div>
+
+            {/* --- BLOC MODALE DE MODIFICATION --- */}
+            {editingImage && (
+                <div className="modal show d-block shadow-lg" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 9999 }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content border-0 shadow-lg rounded-4">
+                            <div className="modal-header bg-light border-0 p-4">
+                                <h5 className="modal-title fw-bold text-purple">Modifier l'œuvre</h5>
+                                <button type="button" className="btn-close" onClick={() => setEditingImage(null)}></button>
+                            </div>
+                            <form onSubmit={handleUpdate}>
+                                <div className="modal-body p-4">
+                                    <div className="mb-3">
+                                        <label className="form-label small fw-bold">Catégorie (Métier)</label>
+                                        <select className="form-select" value={editData.category_id} onChange={e => setEditData('category_id', e.target.value)}>
+                                            <option value="">Choisir...</option>
+                                            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label small fw-bold">Titre</label>
+                                        <input type="text" className="form-control" value={editData.title} onChange={e => setEditData('title', e.target.value)} />
+                                    </div>
+                                    <div className="mb-2">
+                                        <label className="form-label small fw-bold d-block mb-2 text-muted">Univers (Tags)</label>
+                                        <div className="d-flex flex-wrap gap-2">
+                                            {tags.map(tag => (
+                                                <button key={tag.id} type="button" onClick={() => {
+                                                    const id = tag.id;
+                                                    setEditData('tag_ids', editData.tag_ids.includes(id) ? editData.tag_ids.filter(t => t !== id) : [...editData.tag_ids, id]);
+                                                }} className={`btn btn-sm rounded-pill px-3 transition-all ${editData.tag_ids.includes(tag.id) ? 'btn-purple' : 'btn-outline-purple'}`}>
+                                                    {tag.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="modal-footer border-0 p-4">
+                                    <button type="button" className="btn btn-light rounded-pill px-4" onClick={() => setEditingImage(null)}>Annuler</button>
+                                    <button type="submit" className="btn btn-purple rounded-pill px-4 shadow-sm" disabled={editProcessing}>
+                                        {editProcessing ? 'Enregistrement...' : 'Mettre à jour'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AuthenticatedLayout>
     );
 }
