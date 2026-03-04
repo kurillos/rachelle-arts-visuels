@@ -3,6 +3,8 @@ import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Components/Custom/Navbar';
 import Footer from '@/Components/Custom/Footer';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+// @ts-ignore
+import { route } from 'ziggy-js';
 
 const servicesData = [
     {
@@ -71,8 +73,8 @@ const Accompagnements: React.FC = () => {
                                         </p>
                                         
                                         <Link 
-                                            href={`/portfolio?filter=${service.slug}`} 
-                                            className="btn-galerie mt-auto"
+                                            href={route('portfolio.show', { slug: service.slug })} 
+                                            className="btn btn-purple rounded-pill px-4 mt-auto"
                                         >
                                             Voir la galerie
                                         </Link>

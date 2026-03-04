@@ -348,6 +348,95 @@ body {
     filter: invert(72%) sepia(91%) saturate(3073%) hue-rotate(166deg) brightness(101%) contrast(92%);
 }
 
+/* FILTRES GALERIES */
+.btn-filter-custom {
+    background: none;
+    border: none;
+    color: #AA11DD; /* Violet par défaut */
+    font-style: italic;
+    font-size: 1.1rem;
+    padding: 5px 10px;
+    transition: color 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Changement de couleur au survol et quand actif */
+.btn-filter-custom:hover,
+.btn-filter-custom.active {
+    color: #00bcd4;
+}
+
+/* Le trait violet */
+.btn-filter-custom::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: #AA11DD;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+/* Le trait s'affiche au survol */
+.btn-filter-custom:hover::after,
+.btn-filter-custom.active::after {
+    width: 70%;
+}
+
+/* --- MASONRY --- */
+.masonry-container {
+    column-count: 3;
+    column-gap: 1.5rem;
+    width: 100%;
+}
+
+.masonry-brick {
+    break-inside: avoid;
+    display: inline-block;
+    width: 100%;
+    cursor: zoom-in;
+}
+
+.portfolio-img-card {
+    border: 2px solid #AA11DD;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* Effet Zoom léger au Hover */
+.portfolio-img-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(170, 17, 221, 0.2);
+}
+
+.portfolio-img-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 992px) { .masonry-container { column-count: 2; } }
+@media (max-width: 576px) { .masonry-container { column-count: 1; } }
+
+/* --- OVERLAY --- */
+.portfolio-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(170, 17, 221, 0.4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.group:hover .portfolio-overlay {
+    opacity: 1;
+}
+
 /* ADMIN */
 .admin-bg {
     background-color: #f4f7f6;
@@ -489,4 +578,78 @@ body {
 .admin-input:focus {
     border-color: #AA11DD;
     box-shadow: 0 0 0 0.25rem rgba(170, 17, 221, 0.1);
+}
+
+/* Styles pour les imports avec tags */
+.border-dashed {
+    border: 2px dashed #dee2e6 !important;
+}
+
+.portfolio-card-admin {
+    transition: transform 0.2s;
+}
+
+.portfolio-card-admin:hover {
+    transform: translateY(-5px);
+}
+
+.bg-purple-light {
+    background-color: rgba(170, 17, 221, 0.1);
+}
+
+.btn-purple {
+    background-color: #AA11DD;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #8a0db3;
+    color: white;
+}
+
+/* PORTFOLIO */
+.portfolio-item-guest {
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background: #fff;
+}
+
+.portfolio-item-guest:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(170, 17, 221, 0.15) !important;
+}
+
+.bg-purple-light {
+    background-color: rgba(170, 17, 221, 0.1) !important;
+    backdrop-filter: blur(4px);
+}
+
+.btn-outline-purple {
+    border-color: #AA11DD;
+    color: #AA11DD;
+}
+
+.btn-outline-purple:hover {
+    background-color: #AA11DD;
+    color: white;
+}
+
+/* Effet de zoom sur l'image au survol de la carte */
+.group:hover img {
+    transform: scale(1.05);
+}
+.cursor-zoom-in {
+    cursor: zoom-in;
+}
+
+.portfolio-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(170, 17, 221, 0.4); /* Ton violet avec transparence */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.portfolio-item-guest:hover .portfolio-overlay {
+    opacity: 1;
 }

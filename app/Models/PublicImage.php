@@ -26,4 +26,11 @@ class PublicImage extends Model
     {
         return Storage::disk('s3')->url($this->image_path);
     }
+
+    protected $appends = ['full_url'];
+    
+    public function getFullUrlAttribute()
+    {
+        return \Storage::disk('s3')->url($this->image_path);
+    }
 }

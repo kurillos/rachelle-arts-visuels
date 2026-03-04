@@ -5,13 +5,15 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\CategoryTagController;
+use App\Http\Controllers\Admin\PublicImageController;
+use App\Http\Controllers\PortfolioController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
 
 /*
 |--------------------------------------------------------------------------
-| Routes Publiques (Accessibles par tous)
+| Routes Publiques
 |--------------------------------------------------------------------------
 */
 
@@ -23,8 +25,16 @@ Route::get('/', function () {
 
 Route::get('/about', function () { return Inertia::render('About'); })->name('about');
 Route::get('/services', function () { return Inertia::render('Services'); })->name('services');
-Route::get('/portfolio', function () { return Inertia::render('Portfolio'); })->name('portfolio');
 Route::get('/reviews', function () { return Inertia::render('Reviews'); })->name('reviews');
+
+// Groupe Portfolio Propre
+Route::prefix('portfolio')->group(function () {
+    // URL: /portfolio (Tout voir)
+    Route::get('/', [PortfolioController::class, 'index'])->name('portfolio.index');
+    
+    // URL: /portfolio/photographie (Voir un métier)
+    Route::get('/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
+});
 
 // Contact
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
@@ -67,6 +77,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/settings/tags/{tag}', [CategoryTagController::class, 'destroyTag'])->name('admin.tags.destroy');
         Route::patch('/settings/categories/{category}', [CategoryTagController::class, 'updateCategory'])->name('admin.categories.update');
         Route::patch('/settings/tags/{tag}', [CategoryTagController::class, 'updateTag'])->name('admin.tags.update');
+        Route::get('/portfolio', [PublicImageController::class, 'index'])->name('admin.portfolio.index');   
+        Route::post('/portfolio', [PublicImageController::class, 'store'])->name('admin.portfolio.store');
+        Route::delete('/portfolio/{image}', [PublicImageController::class, 'destroy'])->name('admin.portfolio.destroy');
     });
 
     /*

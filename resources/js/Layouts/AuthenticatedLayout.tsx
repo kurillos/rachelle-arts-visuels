@@ -49,6 +49,12 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                                 <ImageIcon size={20} /> Vitrine Accueil
                             </Link>
                         </li>
+                        <li className="mb-2">
+                            <Link href={route('admin.portfolio.index')} 
+                                className={`nav-link-custom ${url.startsWith('/admin/portfolio') ? 'active' : ''}`}>
+                                <ImageIcon size={20} /> Portfolio Public
+                            </Link>
+                        </li>
                         <hr className="my-3 text-muted opacity-25" />
                         <li className="mb-2">
                             <Link href={route('admin.galleries.index', { type: 'mariage' })} 
@@ -68,6 +74,7 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                                 <Settings size={20} /> Config. Galeries
                             </Link>
                         </li>
+
                     </ul>
                 </nav>
 
