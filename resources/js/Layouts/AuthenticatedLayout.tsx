@@ -7,7 +7,8 @@ import {
     Camera, 
     LogOut,
     User,
-    ExternalLink
+    ExternalLink,
+    Settings
 } from 'lucide-react';
 
 declare var route: any;
@@ -59,6 +60,12 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                             <Link href={route('admin.galleries.index', { type: 'shooting' })} 
                                 className={`nav-link-custom ${url.includes('type=shooting') ? 'active' : ''}`}>
                                 <Camera size={20} /> Shootings
+                            </Link>
+                        </li>
+                        <li className="mb-2">
+                            <Link href={route('admin.settings.index')} 
+                                className={`nav-link-custom ${url.startsWith('/admin/settings') ? 'active' : ''}`}>
+                                <Settings size={20} /> Config. Galeries
                             </Link>
                         </li>
                     </ul>

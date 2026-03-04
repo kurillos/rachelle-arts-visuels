@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\Carousel;
+use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,14 +14,40 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Création des Catégories
+        $categories = [
+            'Photographie', 
+            'Faire-part', 
+            'Logo & Graphisme', 
+            'Mise en page'
+        ];
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        foreach ($categories as $cat) {
+            Category::firstOrCreate([
+                'name' => $cat,
+                'slug' => str()->slug($cat)
+            ]);
+        }
 
-        // Add this line to create carousel entries
-        Carousel::factory(6)->create();
+        // Création des Tags de filtres
+        $tags = [
+            'Lueurs Sauvages', 
+            'Compagnons de vie', 
+            'Promesses d\'unions', 
+            'Contes d\'hiver', 
+            'Instants divers'
+                ];
+        foreach ($tags as $tagName) {
+            Tag::firstOrCreate([
+                'name' => $tagName,
+                'slug' => str()->slug($tagName)
+            ]);
+        }
+
+        // Optionnel : Création d'un utilisateur admin si besoin
+        // User::factory()->create([
+        //     'name' => 'Admin',
+        //     'email' => 'admin@example.com',
+        // ]);
     }
 }

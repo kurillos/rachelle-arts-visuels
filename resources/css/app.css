@@ -472,3 +472,21 @@ body {
 .nav-link-custom svg {
     margin-right: 12px;
 }
+
+/* Styles spécifiques pour la page de gestion des catégories et tags */
+.border-bottom-dashed {
+    border-bottom: 1px dashed #e9ecef !important;
+}
+
+.hover-opacity-100:hover {
+    opacity: 1 !important;
+}
+
+.bg-purple-light {
+    background-color: rgba(170, 17, 221, 0.1);
+}
+
+.admin-input:focus {
+    border-color: #AA11DD;
+    box-shadow: 0 0 0 0.25rem rgba(170, 17, 221, 0.1);
+}

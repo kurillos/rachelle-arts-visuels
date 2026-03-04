@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\CategoryTagController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
@@ -57,6 +58,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/galleries', [GalleryController::class, 'index'])->name('admin.galleries.index');
         Route::post('/galleries', [GalleryController::class, 'store'])->name('admin.galleries.store');
         Route::delete('/galleries/{gallery}', [GalleryController::class, 'destroy'])->name('admin.galleries.destroy');
+
+        // Gestion des Catégories & Tags
+        Route::get('/settings/categories-tags', [CategoryTagController::class, 'index'])->name('admin.settings.index');
+        Route::post('/settings/categories', [CategoryTagController::class, 'storeCategory'])->name('admin.categories.store');
+        Route::post('/settings/tags', [CategoryTagController::class, 'storeTag'])->name('admin.tags.store');
+        Route::delete('/settings/categories/{category}', [CategoryTagController::class, 'destroyCategory'])->name('admin.categories.destroy');
+        Route::delete('/settings/tags/{tag}', [CategoryTagController::class, 'destroyTag'])->name('admin.tags.destroy');
+        Route::patch('/settings/categories/{category}', [CategoryTagController::class, 'updateCategory'])->name('admin.categories.update');
+        Route::patch('/settings/tags/{tag}', [CategoryTagController::class, 'updateTag'])->name('admin.tags.update');
     });
 
     /*
