@@ -422,3 +422,112 @@ $cyan-main: #13D4F5;
         }
     }
 }
+
+// --- 11. ADMINISTRATION : LAYOUT & DASHBOARD ---
+.admin-dashboard-wrapper {
+    flex: 1;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+}
+
+// Style des cartes Admin (différent du front)
+.admin-card {
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    
+    .admin-card-header {
+        background: $purple-main;
+        font-family: 'Charmonman', sans-serif;
+        letter-spacing: 1px;
+    }
+}
+
+// Zone d'upload stylisée
+.upload-zone-styled {
+    cursor: pointer;
+    .zone-content {
+        border: 2px dashed rgba($cyan-main, 0.5);
+        background: rgba($cyan-main, 0.02);
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background: rgba($cyan-main, 0.08);
+            border-color: $cyan-main;
+            transform: scale(1.02);
+        }
+    }
+}
+
+// Inputs et Boutons Admin
+.admin-input {
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    &:focus {
+        border-color: $purple-main;
+        box-shadow: 0 0 0 0.25rem rgba($purple-main, 0.1);
+    }
+}
+
+.btn-admin-action {
+    background: linear-gradient(90deg, $purple-main 0%, darken($purple-main, 10%) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s;
+    
+    &:hover {
+        background: $cyan-main;
+        color: white;
+        transform: translateY(-2px);
+    }
+}
+
+// Badge S3 Infrastructure
+.badge-s3 {
+    background: rgba($dark, 0.05);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: $dark;
+    font-weight: 600;
+}
+
+// Styles spécifiques à la Sidebar Admin
+.nav-link-admin {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    color: #64748b;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+
+    &:hover {
+        background-color: rgba($purple-main, 0.05);
+        color: $purple-main;
+    }
+
+    &.active {
+        background-color: $purple-main;
+        color: white;
+        box-shadow: 0 4px 12px rgba($purple-main, 0.2);
+    }
+}
+
+.btn-outline-purple {
+    border: 1px solid $purple-main;
+    color: $purple-main;
+    &:hover {
+        background-color: $purple-main;
+        color: white;
+    }
+}
