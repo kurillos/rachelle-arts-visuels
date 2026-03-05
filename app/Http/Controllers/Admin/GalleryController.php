@@ -102,7 +102,13 @@ class GalleryController extends Controller
         if (!$gallery->client_email) {
             return back()->with('error', "L'email du client n'est pas renseigné.");
         }
+
+        // 1. On envoie le mail
         Mail::to($gallery->client_email)->send(new GalleryInvitation($gallery));
-        return back()->with('success', "L'invitation a été envoyée avec succès !");
+
+        // 2. On met à jour le statut (on passe de 'brouillon' à 'envoyé')
+        $gallery->update(['status' => 'envoyé']);
+
+        return back()->with('success', "L'invitation a été envoyée avec succès et le statut a été mis à jour !");
     }
 }

@@ -78,19 +78,22 @@ class ClientGalleryController extends Controller
     /**
     * Affiche le formulaire d'inscription via le lien du mail
     */
-    public function registerForm(Request $request, $slug)
+    public function registerForm($slug)
     {
-        // On vérifie que la signature de l'URL est valide
-        if (! $request->hasValidSignature()) {
-            abort(403, 'Le lien d\'invitation a expiré ou est invalide. Veuillez vous rapprocher de votre photographe pour obtenir un nouveau lien.');
-        }
-
         $gallery = Gallery::where('slug', $slug)->firstOrFail();
 
-        return Inertia::render('Client/Auth/Register', [
-            'gallery_title' => $gallery->title,
-            'slug' => $slug,
-            'email' => $gallery->client_email // On pré-remplit l'email
+        // Si le client a déjà ouvert sa galerie, on peut imaginer changer le statut ici aussi
+        if ($gallery->status === 'envoyé') {
+            $gallery->update(['status' => 'ouvert']);
+        }
+
+        return Inertia::render('Client/Register', [
+            'gallery' => [
+            'title' => $gallery->title,
+            'client_name' => $gallery->client_name,
+            'slug' => $gallery->slug,
+            'expires_at' => $gallery->expires_at, // Pour le timer !
+            ]
         ]);
     }
 
@@ -122,5 +125,48 @@ class ClientGalleryController extends Controller
 
         return redirect()->route('client.gallery.login', $slug)
             ->with('success', 'Votre compte a été créé avec succès. Connectez-vous pour voir vos photos.');
+    }
+
+    public function storeRegister(Request $request, $slug)
+    {
+        $gallery = Gallery::where('slug', $slug)->firstOrFail();
+
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $gallery->update([
+            'client_name' => $validated['first_name'] . ' ' . $validated['last_name'],
+            'password' => $validated['password'],
+            'status' => 'en cours',
+            'client_notes' => 'Compte initialisé le ' . now()->format('d/m/Y'),
+        ]);
+
+        // On peut ici connecter le client manuellement en session
+        session(['gallery_authenticated' => $gallery->id]);
+
+        return redirect()->route('client.gallery.show', $slug)
+                     ->with('success', 'Bienvenue ! Votre espace est prêt.');
+    }
+
+    public function updatePhotoComment(Request $request, GalleryPhoto $photo)
+    {
+        // Sécurité : on vérifie que la photo appartient bien à une galerie authentifiée en session
+        if (session('gallery_authenticated') !== $photo->gallery_id) {
+            return back()->with('error', 'Action non autorisée.');
+        }
+
+        $request->validate([
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        $photo->update([
+            'client_comment' => $request->comment
+        ]);
+
+        return back()->with('success', 'Note de retouche enregistrée.');
     }
 }

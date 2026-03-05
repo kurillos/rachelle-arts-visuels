@@ -66,6 +66,9 @@ Route::prefix('client/gallery')->group(function () {
     
     // 3. Actions (Favoris)
     Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])->name('client.gallery.favorite');
+
+    // 4. Commentaires 
+    Route::post('/photo/{photo}/comment', [ClientGalleryController::class, 'updatePhotoComment'])->name('client.gallery.photo.comment');
 });
 
 /*

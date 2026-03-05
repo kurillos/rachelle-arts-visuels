@@ -95,12 +95,6 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                                 <Settings size={18} className="me-3" /> Configuration
                             </Link>
                         </li>
-                        <li className="mt-4">
-                            <Link href={route('admin.settings.index')} 
-                                className={`nav-link-admin ${url.startsWith('/admin/settings') ? 'active' : ''}`}>
-                                <Settings size={18} className="me-3" /> Configuration
-                            </Link>
-                        </li>
                     </ul>
                 </nav>
 
