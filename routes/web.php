@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\Admin\CategoryTagController;
-use App\Http\Controllers\Admin\PublicImageController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\ClientGalleryController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\CategoryTagController;
+use App\Http\Controllers\Admin\PublicImageController;
+use App\Http\Controllers\Admin\OfferController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
@@ -92,7 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/carousel/{id}', [AdminDashboardController::class, 'destroy'])->name('admin.carousel.destroy');
 
         // Gestion des Galeries Privées (Mariages & Shootings)
-            Route::prefix('galleries')->name('admin.galleries.')->group(function () {
+        Route::prefix('galleries')->name('admin.galleries.')->group(function () {
             Route::get('/', [GalleryController::class, 'index'])->name('index');
             Route::post('/', [GalleryController::class, 'store'])->name('store');
             Route::get('/{gallery}', [GalleryController::class, 'show'])->name('show');
@@ -108,17 +109,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/settings/tags/{tag}', [CategoryTagController::class, 'destroyTag'])->name('admin.tags.destroy');
         Route::patch('/settings/categories/{category}', [CategoryTagController::class, 'updateCategory'])->name('admin.categories.update');
         Route::patch('/settings/tags/{tag}', [CategoryTagController::class, 'updateTag'])->name('admin.tags.update');
+
+
+        // Portfolio Public (Gérer les images visibles sur le site)
         Route::get('/portfolio', [PublicImageController::class, 'index'])->name('admin.portfolio.index');   
         Route::post('/portfolio', [PublicImageController::class, 'store'])->name('admin.portfolio.store');
         Route::delete('/portfolio/{image}', [PublicImageController::class, 'destroy'])->name('admin.portfolio.destroy');
-    });
 
-    /*
-    | Gestion du Profil Utilisateur (Breeze)
-    */
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        // Admin Offres (Gérer les offres de services)
+        Route::resource('offers', OfferController::class)
+            ->names([
+                    'index' => 'admin.offers.index',
+                    'store' => 'admin.offers.store',
+                    'destroy' => 'admin.offers.destroy',
+                ])
+            ->except(['create', 'edit', 'show']);
+
+        /*
+        | Gestion du Profil Utilisateur (Breeze)
+        */
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

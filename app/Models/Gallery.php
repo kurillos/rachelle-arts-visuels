@@ -11,16 +11,18 @@ class Gallery extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title', 
-        'slug', 
-        'client_name', 
-        'client_email',
+        'title',
+        'slug',
+        'client_name',
+        'client_email', 
         'type',
-        'password', 
-        'event_date', 
-        'expires_at',
-        'photo_quota',
-        'extra_photo_price'
+        'password',
+        'event_date',
+        'expires_at', 
+        'offer_id',
+        'quota',
+        'status',
+        'client_notes'
     ];
 
     // Génère un slug automatique avant la création
@@ -65,5 +67,10 @@ class Gallery extends Model
     public function isExpired(): bool
     {
         return $this->expires_at && $this->expires_at->isPast();
+    }
+
+    public function offer()
+    {
+        return $this->belongsTo(Offer::class);
     }
 }

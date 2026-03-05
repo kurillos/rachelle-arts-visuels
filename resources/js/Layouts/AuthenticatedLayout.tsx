@@ -8,7 +8,8 @@ import {
     LogOut,
     User,
     ExternalLink,
-    Settings
+    Settings,
+    Tag
 } from 'lucide-react';
 
 declare var route: any;
@@ -77,6 +78,21 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                             <Link href={route('admin.galleries.index', { type: 'shooting' })} 
                                 className={`nav-link-admin ${url.includes('type=shooting') ? 'active' : ''}`}>
                                 <Camera size={18} className="me-3" /> Shootings
+                            </Link>
+                        </li>
+                        <div className="admin-nav-separator text-muted small fw-bold mt-4 mb-2 px-3">GESTION MÉTIER</div>
+
+                        <li className="mb-2">
+                            <Link href={route('admin.offers.index')} 
+                                className={`nav-link-admin ${url.startsWith('/admin/offers') ? 'active' : ''}`}>
+                                <Tag size={18} className="me-3" /> Mes Offres & Quotas
+                            </Link>
+                        </li>
+
+                        <li className="mt-4 border-top pt-4">
+                            <Link href={route('admin.settings.index')} 
+                                className={`nav-link-admin ${url.startsWith('/admin/settings') ? 'active' : ''}`}>
+                                <Settings size={18} className="me-3" /> Configuration
                             </Link>
                         </li>
                         <li className="mt-4">
