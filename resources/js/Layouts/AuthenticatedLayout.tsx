@@ -9,7 +9,8 @@ import {
     User,
     ExternalLink,
     Settings,
-    Tag
+    Tag,
+    PenTool // Icône ajoutée pour le graphisme
 } from 'lucide-react';
 
 declare var route: any;
@@ -80,6 +81,13 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                                 <Camera size={18} className="me-3" /> Shootings
                             </Link>
                         </li>
+                        <li className="mb-2">
+                            <Link href={route('admin.galleries.index', { type: 'graphisme' })} 
+                                className={`nav-link-admin ${url.includes('type=graphisme') ? 'active' : ''}`}>
+                                <PenTool size={18} className="me-3" /> Graphisme
+                            </Link>
+                        </li>
+
                         <div className="admin-nav-separator text-muted small fw-bold mt-4 mb-2 px-3">GESTION MÉTIER</div>
 
                         <li className="mb-2">
@@ -114,7 +122,7 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                 </div>
             </aside>
 
-            {/* CONTENU DROITE - PREND TOUT LE RESTE */}
+            {/* CONTENU DROITE */}
             <main className="flex-grow-1" style={{ marginLeft: '280px', backgroundColor: '#F8F9FC', minHeight: '100vh' }}>
                 <div className="container-fluid p-4 p-md-5">
                     {children}

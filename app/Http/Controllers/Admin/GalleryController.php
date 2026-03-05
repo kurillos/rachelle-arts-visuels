@@ -10,33 +10,36 @@ use App\Mail\GalleryInvitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Intervention\Image\Laravel\Facades\Image;
 
 class GalleryController extends Controller
 {
     public function index(Request $request)
     {
-        // On récupère le type pour le filtrage (par défaut 'mariage')
         $type = $request->query('type', 'mariage');
 
         return Inertia::render('Admin/Galleries/Index', [
             'galleries' => Gallery::where('type', $type)
-                ->with(['offer']) // Charge l'offre liée pour afficher le quota
+                ->with(['offer'])
                 ->withCount('photos')
                 ->latest()
                 ->get(),
-            'offers' => Offer::all(), // On envoie les offres pour la modale de création
+            'offers' => Offer::all(),
             'currentType' => $type
         ]);
     }
 
     public function store(Request $request)
     {
+        ini_set('memory_limit', '512M');
+
         $request->validate([
             'title' => 'required|string|max:255',
             'client_name' => 'nullable|string|max:255',
             'client_email' => 'nullable|email|max:255',
-            'type' => 'required|in:mariage,shooting',
+            'type' => 'required|in:mariage,shooting,graphisme', 
             'offer_id' => 'required|exists:offers,id',
             'password' => 'required|string|min:4',
             'images' => 'required|array',
@@ -45,7 +48,6 @@ class GalleryController extends Controller
         ]);
 
         try {
-            // On récupère l'offre pour enregistrer le quota fixe dans la galerie (sécurité)
             $offer = Offer::find($request->offer_id);
 
             $gallery = Gallery::create([
@@ -54,16 +56,56 @@ class GalleryController extends Controller
                 'client_email' => $request->client_email,
                 'type' => $request->type,
                 'offer_id' => $request->offer_id,
-                'quota' => $offer->quota,
+                'photo_quota' => $offer->quota, 
+                'extra_photo_price' => $offer->extra_price ?? 10,
                 'password' => $request->password,
                 'event_date' => $request->event_date,
-                'expires_at' => $request->expires_at,
+                'expires_at' => $request->expires_at ?? now()->addDays(60),
+                'status' => 'brouillon',
             ]);
 
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $file) {
-                    $folder = ($gallery->type === 'mariage') ? 'mariages' : 'shootings';
-                    $path = $file->store("galleries/{$folder}/{$gallery->slug}", 's3');
+                    
+                    $image = Image::read($file);
+                    $image->scale(width: 2000);
+
+
+                // Logique de filigrane sécurisée
+                try {
+                    $logoPath = public_path('images/logo.png');
+
+                    if (file_exists($logoPath)) {
+                        // 1. On lit le logo d'abord
+                        $watermark = Image::read($logoPath);
+        
+                        // 2. On redimensionne le logo
+                        $watermark->scale(width: 500); 
+
+                        // 3. On applique le logo au centre
+                        $image->place($watermark, 'center', opacity: 35);
+                    } else {
+                        \Log::warning("Le logo n'a pas été trouvé au chemin : " . $logoPath);
+                    }
+                } catch (\Exception $e) {
+                // Si une erreur survient (format non supporté, etc.), on log l'erreur
+                // Mais on n'affiche plus de spirales car l'image originale reste intacte
+                    \Log::error("Erreur Watermark : " . $e->getMessage());
+                }
+
+                $encoded = $image->toJpeg(80);
+
+                    $folder = match($gallery->type) {
+                        'mariage' => 'mariages',
+                        'shooting' => 'shootings',
+                        'graphisme' => 'graphisme',
+                        default => 'autres'
+                    };
+
+                    $filename = uniqid() . '.jpg';
+                    $path = "galleries/{$folder}/{$gallery->slug}/{$filename}";
+
+                    Storage::disk('s3')->put($path, (string) $encoded);
 
                     GalleryPhoto::create([
                         'gallery_id' => $gallery->id,
@@ -75,16 +117,21 @@ class GalleryController extends Controller
             }
 
             return redirect()->back()->with('success', "Galerie créée avec succès.");
+
         } catch (\Exception $e) {
-            return back()->with('error', "Erreur : " . $e->getMessage());
+            Log::error("Erreur Store Gallery : " . $e->getMessage());
+            return back()->with('error', "Erreur technique : " . $e->getMessage());
         }
     }
 
-    // Le reste de tes méthodes (destroy, show, sendInvitation) reste inchangé...
-    
     public function destroy(Gallery $gallery)
     {
-        $folder = ($gallery->type === 'mariage') ? 'mariages' : 'shootings';
+        $folder = match($gallery->type) {
+            'mariage' => 'mariages',
+            'shooting' => 'shootings',
+            'graphisme' => 'graphisme',
+            default => 'autres'
+        };
         Storage::disk('s3')->deleteDirectory("galleries/{$folder}/{$gallery->slug}");
         $gallery->delete();
         return redirect()->back()->with('success', 'Galerie supprimée.');
@@ -102,13 +149,8 @@ class GalleryController extends Controller
         if (!$gallery->client_email) {
             return back()->with('error', "L'email du client n'est pas renseigné.");
         }
-
-        // 1. On envoie le mail
         Mail::to($gallery->client_email)->send(new GalleryInvitation($gallery));
-
-        // 2. On met à jour le statut (on passe de 'brouillon' à 'envoyé')
         $gallery->update(['status' => 'envoyé']);
-
-        return back()->with('success', "L'invitation a été envoyée avec succès et le statut a été mis à jour !");
+        return back()->with('success', "L'invitation a été envoyée !");
     }
 }

@@ -608,3 +608,59 @@ aside img {
     height: 80px;
     object-fit: cover;
 }
+
+/* --- PROTECTION ANTI-VOL GLOBALE RACHELLE ARTS --- */
+
+body {
+    // Empêche la sélection de texte (parfois bloque le swipe si sur body)
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    // Bloque le menu contextuel sur iPhone/iPad (appui long)
+    -webkit-touch-callout: none; 
+}
+
+// --- DÉBLOCAGE DU CAROUSEL & ÉLÉMENTS INTERACTIFS ---
+// On redonne la main au Carousel pour qu'il puisse défiler
+.carousel, 
+.carousel-inner,
+.carousel-control-prev, 
+.carousel-control-next, 
+.carousel-indicators,
+.photo-card-client {
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
+    pointer-events: auto !important;
+}
+
+img {
+    // Empêche le "cliquer-glisser" l'image vers le bureau
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+}
+
+a, button, input, textarea, .cursor-pointer, [role="button"] {
+    pointer-events: auto !important;
+}
+
+/* --- PROTECTION IMPRESSION (Média Print) --- */
+@media print {
+    body { 
+        display: none !important; 
+    }
+}
+
+/* --- CLASSES UTILITAIRES --- */
+.no-select { user-select: none; }
+.no-drag { -webkit-user-drag: none; user-drag: none; }
+.rotate-90 { transform: rotate(90deg); }
+.transition-all { transition: all 0.3s ease; }
+
+.bg-purple-light-soft { background-color: #fdfaff; }
+.btn-purple { background-color: #a855f7; color: white; border: none; }
+.btn-purple:hover { background-color: #9333ea; color: white; }
+.selected-ring { outline: 4px solid #a855f7; outline-offset: -4px; }

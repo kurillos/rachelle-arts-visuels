@@ -69,6 +69,9 @@ Route::prefix('client/gallery')->group(function () {
 
     // 4. Commentaires 
     Route::post('/photo/{photo}/comment', [ClientGalleryController::class, 'updatePhotoComment'])->name('client.gallery.photo.comment');
+
+    // 5. Validation de la sélection finale (Action finale du client)
+    Route::post('/{slug}/validate', [ClientGalleryController::class, 'validateSelection'])->name('client.gallery.validate');
 });
 
 /*

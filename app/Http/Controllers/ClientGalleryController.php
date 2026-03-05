@@ -169,4 +169,29 @@ class ClientGalleryController extends Controller
 
         return back()->with('success', 'Note de retouche enregistrée.');
     }
+
+    public function validateSelection($slug)
+    {
+        $gallery = Gallery::where('slug', $slug)->with('photos')->firstOrFail();
+    
+        // On récupère uniquement les photos sélectionnées
+        $selections = $gallery->photos()->where('is_selected', true)->get();
+    
+        // Mise à jour du statut de la galerie
+        $gallery->update([
+            'status' => 'sélectionnée', // Le badge passera en violet chez Rachelle !
+        ]);
+
+        $gallery->update(['status' => 'sélectionnée']);
+
+        Mail::to('rachelle.artsvisuels@gmail.com')->send(new SelectionValidated($gallery));
+
+    // Optionnel : Envoyer un mail auto à Rachelle pour la prévenir
+    // Mail::to('rachelle@exemple.com')->send(new SelectionValidatedMail($gallery));
+
+    return Inertia::render('Client/Thanks', [
+        'title' => $gallery.title,
+        'count' => $selections->count()
+    ]);
+}
 }
