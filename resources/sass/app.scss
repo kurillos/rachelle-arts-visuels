@@ -588,25 +588,22 @@ $cyan-main: #13D4F5;
     border-radius: 1rem;
 }
 
-/* Optionnel : ajouter une petite animation quand la photo est sélectionnée */
 .card {
     transition: transform 0.2s ease, outline 0.2s ease;
 }
 
 .ring-purple {
-    transform: scale(0.98); /* Légère pression pour montrer qu'elle est choisie */
+    transform: scale(0.98);
 }
-/* Fond léger pour la zone de calcul */
+
 .bg-purple-light {
     background-color: #f5f3ff;
 }
 
-/* Animation douce pour la sidebar */
 aside {
     transition: all 0.3s ease-in-out;
 }
 
-/* Style pour les images dans la sidebar */
 aside img {
     height: 80px;
     object-fit: cover;

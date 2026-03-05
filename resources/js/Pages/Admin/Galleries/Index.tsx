@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { 
     Plus, 
     Trash2, 
     Eye, 
     Calendar, 
-    User as UserIcon, 
     Lock, 
     UploadCloud,
     Image as ImageIcon,
-    CheckCircle2
+    Mail
 } from 'lucide-react';
 // @ts-ignore
 import { route } from 'ziggy-js';
@@ -19,6 +18,7 @@ interface Gallery {
     id: number;
     title: string;
     client_name: string;
+    client_email: string;
     slug: string;
     type: string;
     password: string;
@@ -35,19 +35,23 @@ interface Props {
 export default function Index({ auth, galleries, currentType }: Props) {
     const [showModal, setShowModal] = useState(false);
 
-    // Formulaire Inertia avec gestion de l'upload progressif
+    // Formulaire Inertia avec gestion de l'email
     const { data, setData, post, processing, progress, reset, errors } = useForm({
         title: '',
         client_name: '',
+        client_email: '',
         type: currentType,
-        password: Math.random().toString(36).slice(-6), // Génère un code auto
+        password: Math.random().toString(36).slice(-6), 
         event_date: '',
         images: [] as File[],
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+    
+        // On s'assure que le type est bien celui de la page actuelle avant d'envoyer
         post(route('admin.galleries.store'), {
+            onBefore: () => { data.type = currentType },
             onSuccess: () => {
                 setShowModal(false);
                 reset();
@@ -97,7 +101,11 @@ export default function Index({ auth, galleries, currentType }: Props) {
                                                         method="delete" 
                                                         as="button" 
                                                         className="dropdown-item text-danger d-flex align-items-center"
-                                                        onClick={() => confirm('Supprimer cette galerie et toutes ses photos sur S3 ?')}
+                                                        onClick={(e) => {
+                                                            if(!confirm('Supprimer cette galerie et toutes ses photos sur S3 ?')) {
+                                                                e.preventDefault();
+                                                            }
+                                                        }}
                                                     >
                                                         Confirmer la suppression
                                                     </Link>
@@ -107,7 +115,13 @@ export default function Index({ auth, galleries, currentType }: Props) {
                                     </div>
                                     
                                     <h5 className="fw-bold mb-1">{gallery.title}</h5>
-                                    <p className="text-muted small mb-3">Client: {gallery.client_name || 'Non spécifié'}</p>
+                                    <p className="text-muted small mb-0">Client: {gallery.client_name || 'Non spécifié'}</p>
+                                    
+                                    {/* Affichage de l'email client sur la carte */}
+                                    <p className="small mb-3">
+                                        <Mail size={12} className="me-1 text-purple" />
+                                        <span className="text-purple fw-medium italic">{gallery.client_email || 'Email non renseigné'}</span>
+                                    </p>
                                     
                                     <div className="d-flex gap-3 mb-4">
                                         <div className="small d-flex align-items-center text-muted">
@@ -116,6 +130,21 @@ export default function Index({ auth, galleries, currentType }: Props) {
                                         <div className="small d-flex align-items-center text-muted">
                                             <ImageIcon size={14} className="me-1" /> {gallery.photos_count} photos
                                         </div>
+                                    </div>
+
+                                    <div className="d-grid gap-2 mb-2">
+                                        <button 
+                                            onClick={() => {
+                                                if(confirm(`Envoyer l'invitation à ${gallery.client_email} ?`)) { 
+                                                    router.post(route('admin.galleries.send', gallery.id));
+                                                }
+                                            }}
+                                            disabled={!gallery.client_email}
+                                            className="btn btn-purple btn-sm py-2 d-flex align-items-center justify-content-center"
+                                        >
+                                            <Mail size={16} className="me-2" /> 
+                                            {gallery.client_email ? "Envoyer l'accès client" : "Email manquant"}
+                                        </button>
                                     </div>
 
                                     <div className="d-grid gap-2">
@@ -138,14 +167,14 @@ export default function Index({ auth, galleries, currentType }: Props) {
                     ))}
                 </div>
 
-                {/* MODAL DE CRÉATION (MODAL BOOTSTRAP MANUEL) */}
+                {/* MODAL DE CRÉATION */}
                 {showModal && (
                     <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <div className="modal-dialog modal-dialog-centered modal-lg">
                             <div className="modal-content border-0 rounded-4 shadow-lg">
                                 <form onSubmit={submit}>
                                     <div className="modal-header border-0 p-4">
-                                        <h5 className="modal-title fw-bold">Nouvelle Galerie Privée</h5>
+                                        <h5 className="modal-title fw-bold">Nouvelle Galerie Privée ({currentType})</h5>
                                         <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
                                     </div>
                                     <div className="modal-body p-4">
@@ -153,10 +182,23 @@ export default function Index({ auth, galleries, currentType }: Props) {
                                             <div className="col-md-6">
                                                 <label className="form-label small fw-bold">Nom de la galerie</label>
                                                 <input type="text" className="form-control admin-input" value={data.title} onChange={e => setData('title', e.target.value)} placeholder="Ex: Mariage Julie & Tom" required />
+                                                {errors.title && <div className="text-danger small">{errors.title}</div>}
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label small fw-bold">Nom du client</label>
                                                 <input type="text" className="form-control admin-input" value={data.client_name} onChange={e => setData('client_name', e.target.value)} placeholder="Ex: Julie Martin" />
+                                                {errors.client_name && <div className="text-danger small">{errors.client_name}</div>}
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label small fw-bold text-purple">Email du client (pour invitation)</label>
+                                                <input 
+                                                    type="email" 
+                                                    className="form-control admin-input border-purple-light" 
+                                                    value={data.client_email} 
+                                                    onChange={e => setData('client_email', e.target.value)} 
+                                                    placeholder="client@exemple.com"
+                                                />
+                                                {errors.client_email && <div className="text-danger small">{errors.client_email}</div>}
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label small fw-bold">Mot de passe client</label>
@@ -182,7 +224,6 @@ export default function Index({ auth, galleries, currentType }: Props) {
                                             </div>
                                         </div>
 
-                                        {/* BARRE DE PROGRESSION */}
                                         {progress && (
                                             <div className="mt-4">
                                                 <div className="progress" style={{ height: '10px' }}>

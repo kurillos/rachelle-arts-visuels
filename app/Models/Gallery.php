@@ -10,7 +10,18 @@ class Gallery extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'slug', 'password', 'event_date', 'type', 'client_name'];
+    protected $fillable = [
+        'title', 
+        'slug', 
+        'client_name', 
+        'client_email',
+        'type',
+        'password', 
+        'event_date', 
+        'expires_at',
+        'photo_quota',
+        'extra_photo_price'
+    ];
 
     // Génère un slug automatique avant la création
     protected static function boot()

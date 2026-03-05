@@ -53,6 +53,20 @@ Route::prefix('client/gallery')->group(function () {
     Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])->name('client.gallery.favorite');
 });
 
+// Routes publiques pour les clients
+Route::prefix('client/gallery')->group(function () {
+    // 1. Inscription (Lien du mail)
+    Route::get('/{slug}/register', [ClientGalleryController::class, 'registerForm'])->name('client.gallery.register');
+    Route::post('/{slug}/register', [ClientGalleryController::class, 'register.store'])->name('client.gallery.register.store');
+
+    // 2. Connexion classique
+    Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
+    Route::post('/{slug}/login', [ClientGalleryController::class, 'login'])->name('client.gallery.login');
+    
+    // 3. Actions (Favoris)
+    Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])->name('client.gallery.favorite');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Routes Sécurisées (Espace Administration)
@@ -78,11 +92,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/carousel/{id}', [AdminDashboardController::class, 'destroy'])->name('admin.carousel.destroy');
 
         // Gestion des Galeries Privées (Mariages & Shootings)
-        Route::prefix('galleries')->name('admin.galleries.')->group(function () {
+            Route::prefix('galleries')->name('admin.galleries.')->group(function () {
             Route::get('/', [GalleryController::class, 'index'])->name('index');
             Route::post('/', [GalleryController::class, 'store'])->name('store');
             Route::get('/{gallery}', [GalleryController::class, 'show'])->name('show');
             Route::delete('/{gallery}', [GalleryController::class, 'destroy'])->name('destroy');
+            Route::post('/{gallery}/send-invitation', [GalleryController::class, 'sendInvitation'])->name('send');
         });
 
         // Gestion des Catégories & Tags
