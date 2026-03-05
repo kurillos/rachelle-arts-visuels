@@ -1,0 +1,424 @@
+// 1. VARIABLES BOOTSTRAP
+$purple-main: #AA11DD;
+$cyan-main: #13D4F5;
+$primary: $purple-main;
+$info: $cyan-main;
+$dark: #1A1C20;
+$body-bg: #ffffff;
+
+// 2. IMPORT SOURCES
+@import "bootstrap/scss/bootstrap";
+@import url('https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Charmonman:wght@400;700&display=swap');
+
+// 3. GLOBAL
+body {
+    font-family: 'Charm', sans-serif;
+    padding-top: 130px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+// 4. HEADER
+.header-container {
+    height: 120px;
+    background-color: $white;
+
+    .container-fluid {
+        padding: 0 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar-brand {
+        margin: 0;
+        img {
+            height: 80px; 
+            width: auto;
+            object-fit: contain;
+        }
+    }
+}
+
+// 5. NAVIGATION & SOULIGNEMENT
+.nav-link {
+    position: relative;
+    padding: 5px 0;
+    margin: 0 20px;
+    color: $primary !important;
+    font-size: 1.4rem;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: $primary;
+        transition: width 0.4s ease-in-out;
+        transform: none !important;
+    }
+
+    &:hover, &.active {
+        color: $info !important;
+        &::after { width: 100%; }
+    }
+}
+
+// 6. TITRES
+.title-underline {
+    font-family: 'Charmonman', sans-serif;
+    display: inline-block;
+    position: relative;
+    padding-bottom: 8px;
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0; width: 100%; height: 3px;
+        background-color: $primary;
+    }
+}
+
+// 7. FOOTER
+.footer {
+    margin-top: auto;
+    background-color: $dark;
+    color: $info;
+    padding: 20px 0;
+    width: 100%;
+
+    .container-fluid {
+        padding: 0 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .footer-logo img {
+        height: 50px;
+        width: auto;
+    }
+
+    .footer-icons img {
+        width: 28px;
+        height: 28px;
+        filter: invert(72%) sepia(91%) saturate(3073%) hue-rotate(166deg) brightness(101%) contrast(92%);
+    }
+}
+
+// 8. PAGE : MON HISTOIRE (About)
+.main-container-about {
+    padding-top: 40px;
+
+    // L'image en cercle
+    .about-img-container {
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 8px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+
+        .about-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            width: 280px;
+            height: 280px;
+        }
+    }
+
+    // Le contenu textuel
+    .about-content-wrapper {
+        padding: 20px;
+        text-align: left;
+
+        .about-intro-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+        }
+
+        // Le bloc Slogan Cyan
+        .slogan {
+            background-color: rgba($cyan-main, 1);
+            border-left: 5px solid $cyan-main;
+            color: $dark;
+            font-size: 1.1rem;
+            border-radius: 10px;
+        }
+    }
+
+    // Bouton de contact personnalisé
+    .btn-contact-container {
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: $purple-main;
+        color: white;
+        border-radius: 50px;
+        font-family: 'Charmonman', sans-serif;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba($purple-main, 0.3);
+
+        &:hover {
+            background-color: $cyan-main;
+            transform: translateY(-3px);
+            color: white;
+        }
+    }
+}
+
+// 9. PAGE : ACCOMPAGNEMENTS (Services)
+.card-service {
+    background: linear-gradient(90deg, 
+        $cyan-main 0%, 
+        $purple-main 100%, 
+        darken($cyan-main, 20%) 100%
+    );
+    
+    margin-bottom: 20px;
+    margin-top: 30px;
+    height: 600px;
+    border-radius: 20px;
+    border: none;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+
+        // Déclenchement du trait
+        .card-title-service::after {
+            width: 100% !important;
+        }
+    }
+
+    .image-wrapper {
+        padding: 15px;
+        img {
+            border-radius: 15px;
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    .card-body {
+        color: black;
+        padding: 20px;
+        z-index: 1;
+        
+        .card-title-service {
+            font-family: 'Charmonman', sans-serif;
+            font-size: 1.8rem;
+            color: black;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 5px; 
+            
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 3px;
+                background-color: #AA11DD;
+                transition: width 0.4s ease-in-out;
+                z-index: 2;
+            }
+        }
+
+        .card-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .btn-purple {
+            background-color: $purple-main;
+            color: white;
+            font-weight: bold;
+            border-radius: 50px;
+            padding: 10px 25px;
+            border: none;
+            margin-top: auto;
+
+            &:hover {
+                background-color: $cyan-main;
+                color: white;
+            }
+        }
+    }
+}
+
+// 10. PAGE : CONTACT
+.contact-dark-theme {
+    background-color: $dark;
+    
+    .contact-intro {
+        font-family: 'Charm', sans-serif;
+        font-size: 1.3rem;
+    }
+
+    .text-cyan {
+        color: $cyan-main;
+        font-family: 'Charmonman', sans-serif;
+    }
+
+    .contact-form {
+        padding: 20px;
+
+        // champs épurés (juste une ligne en bas)
+        .form-control-custom {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0;
+            color: white;
+            width: 100%;
+            padding: 10px 5px;
+            transition: all 0.4s ease;
+            text-align: center;
+
+            &:focus {
+                outline: none;
+                border-bottom-color: $cyan-main;
+                background: rgba($cyan-main, 0.05);
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+    }
+
+    .btn-envoyez {
+        background: linear-gradient(90deg, $cyan-main 0%, $purple-main 100%);
+        border: none;
+        color: white;
+        padding: 12px 60px;
+        border-radius: 50px;
+        font-family: 'Charmonman', sans-serif;
+        font-size: 1.4rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 15px rgba($purple-main, 0.3);
+
+        &:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba($cyan-main, 0.4);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+}
+
+// --- VARIABLES ---
+$purple-main: #AA11DD;
+$cyan-main: #13D4F5;
+
+// 11. PAGE PORTFOLIO : TITRES & FILTRES DYNAMIQUES
+.text-purple {
+    color: $purple-main;
+}
+
+.admin-title-cursive {
+    font-family: 'Charmonman', sans-serif;
+    font-weight: 700;
+    color: $purple-main;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% + 40px);
+        height: 3px;
+        background-color: $purple-main;
+        border-radius: 2px;
+    }
+}
+
+// Reset et Style des Boutons de Filtres (Tags)
+.btn-filter-custom {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 5px 0;
+    margin: 0 15px;
+    cursor: pointer;
+    font-family: 'Charm', sans-serif;
+    color: $purple-main;
+    font-size: 1.2rem;
+    position: relative;
+    transition: color 0.3s ease;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background-color: $purple-main;
+        transform: translateX(-50%);
+        transition: width 0.3s ease-in-out;
+    }
+
+    // État Hover et Actif 
+    &:hover, &.active {
+        color: $cyan-main;
+        
+        &::after {
+            width: 100%;
+        }
+    }
+}
+
+
+.masonry-container {
+    columns: 3 300px;
+    column-gap: 20px;
+    width: 100%;
+    
+    .masonry-brick {
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 20px;
+        break-inside: avoid;
+        
+        .portfolio-img-card {
+            border: 3px solid $purple-main;
+            transition: transform 0.3s ease;
+            cursor: zoom-in;
+
+            &:hover {
+                transform: translateY(-5px);
+            }
+        }
+    }
+}

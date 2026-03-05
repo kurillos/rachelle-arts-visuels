@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
                     <small>rachelle.artsvisuels@gmail.com</small>
                 </div>
                 
-                <div className="icons">
+                <div className="footer-icons">
                     <a href="https://www.instagram.com/rachelle_arts_visuels/" target="_blank" rel="noopener noreferrer">
                         <img src="/images/instagram.png" alt="Instagram" className="instagram-icon" />
                     </a>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 interface NavbarProps {
     auth?: any;
@@ -7,50 +7,29 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ auth }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { url } = usePage();
+
+    const isActive = (path: string) => url === path ? 'active fw-bold' : '';
 
     return (
-        <header className="header-container">
-            <nav className="navbar navbar-expand-lg w-100">
+        <header className="header-container fixed-top shadow-sm bg-white">
+            <nav className="navbar navbar-expand-lg h-100">
+                {/* container-fluid permet au logo de sortir du cadre centré */}
                 <div className="container-fluid">
-                    {/* LOGO */}
-                    <Link className="navbar-brand logo" href="/">
-                        <img src="/images/logo.svg" alt="Rachelle Arts Visuels" />
+                    <Link className="navbar-brand" href="/">
+                        <img src="/images/logo.svg" alt="Logo" />
                     </Link>
 
-                    {/* BOUTON MOBILE (Hamburger) */}
-                    <button 
-                        className="navbar-toggler" 
-                        type="button" 
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        aria-controls="navbarNav" 
-                        aria-expanded={isMenuOpen} 
-                        aria-label="Toggle navigation"
-                    >
+                    <button className="navbar-toggler" type="button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                         <span className="navbar-toggler-icon"></span>
                     </button>
 
-                    {/* LIENS DU MENU */}
-                    <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
-                        <ul className="navbar-nav ms-auto">
-                            <li className="nav-item">
-                                <Link className="nav-link" href="/about">Mon Histoire</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" href="/services">Accompagnements</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" href="/reviews">Avis clients</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" href="/contact">Contact</Link>
-                            </li>
-                            
-                            {/* Optionnel : Lien Admin si connecté */}
-                            {auth?.user && (
-                                <li className="nav-item">
-                                    <Link className="nav-link font-bold" href="/dashboard">Admin</Link>
-                                </li>
-                            )}
+                    <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`}>
+                        <ul className="navbar-nav ms-auto align-items-center">
+                            <li className="nav-item"><Link className={`nav-link ${isActive('/about')}`} href="/about">Mon Histoire</Link></li>
+                            <li className="nav-item"><Link className={`nav-link ${isActive('/services')}`} href="/services">Accompagnements</Link></li>
+                            <li className="nav-item"><Link className={`nav-link ${isActive('/contact')}`} href="/contact">Contact</Link></li>
+                            {auth?.user && <li className="nav-item"><Link className="nav-link" href="/dashboard">Mon Espace</Link></li>}
                         </ul>
                     </div>
                 </div>

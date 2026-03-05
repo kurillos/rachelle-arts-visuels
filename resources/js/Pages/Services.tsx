@@ -20,8 +20,8 @@ const servicesData = [
         image: "/images/services/faire_part.jpeg"
     },
     {
-        title: "Logo et graphisme",
-        slug: "graphisme",
+        title: "Logo & Graphisme",
+        slug: "logo-graphisme",
         description: "Création de votre logo d'entreprise décliné sur les supports de votre choix.",
         image: "/images/services/service_logo.jpeg"
     },
@@ -65,7 +65,7 @@ const Accompagnements: React.FC = () => {
                                     </div>
                                     
                                     <div className="card-body d-flex flex-column align-items-center text-center px-4 pb-4">
-                                        <h5 className="fw-bold mb-3" style={{ letterSpacing: '1px' }}>
+                                        <h5 className="card-title-service fw-bold mb-3" style={{ letterSpacing: '1px' }}>
                                             {service.title}
                                         </h5>
                                         <p className="card-text italic mb-4">
