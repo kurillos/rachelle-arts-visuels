@@ -10,7 +10,7 @@ class Gallery extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'slug', 'password', 'event_date'];
+    protected $fillable = ['title', 'slug', 'password', 'event_date', 'type', 'client_name'];
 
     // Génère un slug automatique avant la création
     protected static function boot()
@@ -21,9 +21,38 @@ class Gallery extends Model
         });
     }
 
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'event_date' => 'date',
+    ];
+
     // Relation : Une galerie a plusieurs photos
     public function photos()
     {
         return $this->hasMany(GalleryPhoto::class);
+    }
+
+    // Helper pour compter les sélections clients
+    public function getFavoritesCountAttribute()
+    {
+        return $this->photos()->where('is_selected', true)->count();
+    }
+
+    // On utilise les "Booted" events pour définir la date à la création
+    protected static function booted()
+    {
+        static::creating(function ($gallery) {
+            if (!$gallery->expires_at) {
+                $gallery->expires_at = now()->addDays(60);
+            }
+        });
+    }
+
+    /**
+    * Helper pour savoir si la galerie est encore valide
+    */
+    public function isExpired(): bool
+    {
+        return $this->expires_at && $this->expires_at->isPast();
     }
 }

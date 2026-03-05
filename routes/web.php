@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\CategoryTagController;
 use App\Http\Controllers\Admin\PublicImageController;
 use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\ClientGalleryController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
@@ -40,6 +41,18 @@ Route::prefix('portfolio')->group(function () {
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
+// Routes publiques pour les clients de Rachelle
+Route::prefix('client/gallery')->group(function () {
+    // La vue de connexion ou la galerie (selon la session)
+    Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
+    
+    // Le traitement du mot de passe
+    Route::post('/{slug}/login', [ClientGalleryController::class, 'login'])->name('client.gallery.login');
+    
+    // Action de favoris (Post-authentification client)
+    Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])->name('client.gallery.favorite');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Routes Sécurisées (Espace Administration)
@@ -65,9 +78,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/carousel/{id}', [AdminDashboardController::class, 'destroy'])->name('admin.carousel.destroy');
 
         // Gestion des Galeries Privées (Mariages & Shootings)
-        Route::get('/galleries', [GalleryController::class, 'index'])->name('admin.galleries.index');
-        Route::post('/galleries', [GalleryController::class, 'store'])->name('admin.galleries.store');
-        Route::delete('/galleries/{gallery}', [GalleryController::class, 'destroy'])->name('admin.galleries.destroy');
+        Route::prefix('galleries')->name('admin.galleries.')->group(function () {
+            Route::get('/', [GalleryController::class, 'index'])->name('index');
+            Route::post('/', [GalleryController::class, 'store'])->name('store');
+            Route::get('/{gallery}', [GalleryController::class, 'show'])->name('show');
+            Route::delete('/{gallery}', [GalleryController::class, 'destroy'])->name('destroy');
+        });
 
         // Gestion des Catégories & Tags
         Route::get('/settings/categories-tags', [CategoryTagController::class, 'index'])->name('admin.settings.index');
