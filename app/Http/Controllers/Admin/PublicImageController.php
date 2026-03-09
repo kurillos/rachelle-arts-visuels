@@ -16,7 +16,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 class PublicImageController extends Controller
 {
     /**
-     * Affiche la liste des images dans l'admin
+     * Affiche la page de gestion du portfolio.
      */
     public function index()
     {
@@ -29,65 +29,79 @@ class PublicImageController extends Controller
     }
 
     /**
-     * Traite l'upload massif, applique le logo et enregistre en BDD
+     * Enregistre une ou plusieurs images (Upload atomique via React/Axios).
      */
     public function store(Request $request)
     {
-        // 1. Validation
+        // Validation stricte (100 Mo max par fichier pour la HD)
         $request->validate([
             'images' => 'required|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:102400', 
             'category_id' => 'required|exists:categories,id',
             'tag_ids' => 'nullable|array',
         ]);
 
         $manager = new ImageManager(new Driver());
+        $uploadedData = [];
 
         try {
             foreach ($request->file('images') as $file) {
-                // 2. Lecture et redimensionnement
+                // 1. Lecture et redimensionnement (Largeur max 2000px pour le web)
                 $image = $manager->read($file);
                 $image->scale(width: 2000);
 
-                // 3. Application du Logo (Filigrane) au centre
+                // 2. Application du filigrane (Watermark)
                 $logoPath = public_path('images/logo.png');
                 if (file_exists($logoPath)) {
                     $watermark = $manager->read($logoPath);
                     $watermark->scale(width: 500); 
-                    $image->place($watermark, 'center', opacity: 50);
+                    $image->place($watermark, 'center', opacity: 40);
                 }
 
-                // 4. Préparation du fichier
+                // 3. Encodage JPEG progressif (Optimisation poids/qualité)
                 $encoded = $image->toJpeg(80);
                 $filename = uniqid() . '.jpg';
-                $pathForS3 = "portfolio/{$filename}";
+                $path = "portfolio/{$filename}";
 
-                // 5. Upload vers S3
-                Storage::disk('s3')->put($pathForS3, (string) $encoded);
+                // 4. Stockage sur S3
+                Storage::disk('s3')->put($path, (string) $encoded);
 
-                // 6. Enregistrement en Base de Données
+                // 5. Création de l'entrée en base de données
                 $item = PublicImage::create([
                     'title' => $file->getClientOriginalName(),
-                    'image_path' => $pathForS3,
+                    'image_path' => $path,
                     'category_id' => $request->category_id,
                 ]);
 
-                // 7. Synchronisation des Tags
+                // 6. Synchronisation des tags (Univers)
                 if ($request->has('tag_ids')) {
                     $item->tags()->sync($request->tag_ids);
                 }
+
+                $uploadedData[] = $item->load(['category', 'tags']);
             }
 
-            return back()->with('success', 'Images traitées, signées et publiées avec succès !');
+            // --- CRUCIAL POUR L'ANTI-PAGE BLANCHE ---
+            // On renvoie du JSON. Axios le réceptionnera proprement sans que le routeur
+            // d'Inertia ne tente de rediriger la page au milieu de l'upload.
+            return response()->json([
+                'success' => true,
+                'message' => 'Image traitée avec succès',
+                'data' => $uploadedData
+            ], 200);
 
         } catch (\Exception $e) {
             Log::error("Erreur Store Portfolio : " . $e->getMessage());
-            return back()->with('error', "Une erreur est survenue : " . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'error' => 'Erreur lors du traitement de l\'image.'
+            ], 500);
         }
     }
 
     /**
-     * Met à jour les métadonnées d'une image
+     * Met à jour les métadonnées d'une image.
      */
     public function update(Request $request, PublicImage $image)
     {
@@ -100,19 +114,23 @@ class PublicImageController extends Controller
             $image->tags()->sync($request->tag_ids);
         }
     
-        return back()->with('success', 'Image mise à jour.');
+        return back(); // Ici le back() est possible car c'est une action unique (Modale)
     }
 
     /**
-     * Supprime l'image de la BDD et du stockage S3
+     * Supprime une image de la BDD et de S3.
      */
     public function destroy(PublicImage $image)
     {
-        if (Storage::disk('s3')->exists($image->image_path)) {
-            Storage::disk('s3')->delete($image->image_path);
+        try {
+            if (Storage::disk('s3')->exists($image->image_path)) {
+                Storage::disk('s3')->delete($image->image_path);
+            }
+            $image->delete();
+            return back();
+        } catch (\Exception $e) {
+            Log::error("Erreur Delete Portfolio : " . $e->getMessage());
+            return back()->with('error', 'Erreur lors de la suppression.');
         }
-        
-        $image->delete();
-        return back()->with('success', 'Image supprimée définitivement.');
     }
 }
