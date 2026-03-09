@@ -42,23 +42,12 @@ Route::prefix('portfolio')->group(function () {
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
-// Routes publiques pour les clients de Rachelle
-Route::prefix('client/gallery')->group(function () {
-    // La vue de connexion ou la galerie (selon la session)
-    Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
-    
-    // Le traitement du mot de passe
-    Route::post('/{slug}/login', [ClientGalleryController::class, 'login'])->name('client.gallery.login');
-    
-    // Action de favoris (Post-authentification client)
-    Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])->name('client.gallery.favorite');
-});
-
 // Routes publiques pour les clients
 Route::prefix('client/gallery')->group(function () {
     // 1. Inscription (Lien du mail)
     Route::get('/{slug}/register', [ClientGalleryController::class, 'registerForm'])->name('client.gallery.register');
     Route::post('/{slug}/register', [ClientGalleryController::class, 'register.store'])->name('client.gallery.register.store');
+    Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
 
     // 2. Connexion classique
     Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
@@ -120,6 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Portfolio Public (Gérer les images visibles sur le site)
         Route::get('/portfolio', [PublicImageController::class, 'index'])->name('admin.portfolio.index');   
         Route::post('/portfolio', [PublicImageController::class, 'store'])->name('admin.portfolio.store');
+        Route::patch('/portfolio/{image}', [PublicImageController::class, 'update'])->name('admin.portfolio.update');
         Route::delete('/portfolio/{image}', [PublicImageController::class, 'destroy'])->name('admin.portfolio.destroy');
 
         // Admin Offres (Gérer les offres de services)

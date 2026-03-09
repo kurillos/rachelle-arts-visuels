@@ -656,7 +656,7 @@ a, button, input, textarea, .cursor-pointer, [role="button"] {
 
 /* --- CLASSES UTILITAIRES --- */
 .no-select { user-select: none; }
-.no-drag { -webkit-user-drag: none; user-drag: none; }
+.no-drag { -webkit-user-drag: none; }
 .rotate-90 { transform: rotate(90deg); }
 .transition-all { transition: all 0.3s ease; }
 

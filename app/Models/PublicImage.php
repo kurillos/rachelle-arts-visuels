@@ -9,6 +9,8 @@ class PublicImage extends Model
 {
     protected $fillable = ['category_id', 'image_path', 'title'];
 
+    protected $appends = ['full_url'];
+
     // Relation vers la catégorie
     public function category()
     {
@@ -26,8 +28,6 @@ class PublicImage extends Model
     {
         return Storage::disk('s3')->url($this->image_path);
     }
-
-    protected $appends = ['full_url'];
     
     public function getFullUrlAttribute()
     {
