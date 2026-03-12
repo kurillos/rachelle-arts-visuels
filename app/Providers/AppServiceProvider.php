@@ -12,7 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // On force Laravel à utiliser public_html comme dossier public racine
+        $this->app->usePublicPath(realpath(base_path('../public_html')));
     }
 
     /**
@@ -21,5 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        Vite::useBuildDirectory('build');
     }
 }

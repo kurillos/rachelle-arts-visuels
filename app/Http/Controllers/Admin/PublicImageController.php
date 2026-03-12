@@ -29,11 +29,10 @@ class PublicImageController extends Controller
     }
 
     /**
-     * Enregistre une ou plusieurs images (Upload atomique via React/Axios).
+     * Enregistre une ou plusieurs images.
      */
     public function store(Request $request)
     {
-        // Validation stricte (100 Mo max par fichier pour la HD)
         $request->validate([
             'images' => 'required|array',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:102400', 
@@ -46,19 +45,26 @@ class PublicImageController extends Controller
 
         try {
             foreach ($request->file('images') as $file) {
-                // 1. Lecture et redimensionnement (Largeur max 2000px pour le web)
+                // 1. Lecture et redimensionnement
                 $image = $manager->read($file);
                 $image->scale(width: 2000);
 
-                // 2. Application du filigrane (Watermark)
+                // 2. Application du filigrane (Watermark en HAUT À DROITE)
                 $logoPath = public_path('images/logo.png');
                 if (file_exists($logoPath)) {
                     $watermark = $manager->read($logoPath);
-                    $watermark->scale(width: 500); 
-                    $image->place($watermark, 'center', opacity: 40);
+                    $watermark->scale(width: 250); 
+
+                    $image->place(
+                        $watermark, 
+                        'top-right', 
+                        offset_x: 40, 
+                        offset_y: 40, 
+                        opacity: 30
+                    );
                 }
 
-                // 3. Encodage JPEG progressif (Optimisation poids/qualité)
+                // 3. Encodage et nommage
                 $encoded = $image->toJpeg(80);
                 $filename = uniqid() . '.jpg';
                 $path = "portfolio/{$filename}";
@@ -66,14 +72,13 @@ class PublicImageController extends Controller
                 // 4. Stockage sur S3
                 Storage::disk('s3')->put($path, (string) $encoded);
 
-                // 5. Création de l'entrée en base de données
+                // 5. Base de données
                 $item = PublicImage::create([
                     'title' => $file->getClientOriginalName(),
                     'image_path' => $path,
                     'category_id' => $request->category_id,
                 ]);
 
-                // 6. Synchronisation des tags (Univers)
                 if ($request->has('tag_ids')) {
                     $item->tags()->sync($request->tag_ids);
                 }
@@ -81,9 +86,6 @@ class PublicImageController extends Controller
                 $uploadedData[] = $item->load(['category', 'tags']);
             }
 
-            // --- CRUCIAL POUR L'ANTI-PAGE BLANCHE ---
-            // On renvoie du JSON. Axios le réceptionnera proprement sans que le routeur
-            // d'Inertia ne tente de rediriger la page au milieu de l'upload.
             return response()->json([
                 'success' => true,
                 'message' => 'Image traitée avec succès',
@@ -92,16 +94,12 @@ class PublicImageController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Erreur Store Portfolio : " . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'error' => 'Erreur lors du traitement de l\'image.'
-            ], 500);
+            return response()->json(['success' => false, 'error' => 'Erreur de traitement.'], 500);
         }
     }
 
     /**
-     * Met à jour les métadonnées d'une image.
+     * Met à jour les métadonnées.
      */
     public function update(Request $request, PublicImage $image)
     {
@@ -114,11 +112,11 @@ class PublicImageController extends Controller
             $image->tags()->sync($request->tag_ids);
         }
     
-        return back(); // Ici le back() est possible car c'est une action unique (Modale)
+        return back();
     }
 
     /**
-     * Supprime une image de la BDD et de S3.
+     * Supprime une image.
      */
     public function destroy(PublicImage $image)
     {

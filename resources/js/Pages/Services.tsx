@@ -9,33 +9,45 @@ import { route } from 'ziggy-js';
 const servicesData = [
     {
         title: "Photographie",
+        active: true,
         slug: "photographie",
         description: "Réalisation et capture de vos moments magiques. Pour un mariage, un anniversaire ou tout simplement capturer vos amis à quatre pattes, immortalisons ensemble ce moment.",
         image: "/images/services/photographie.jpeg"
     },
     {
         title: "Faire-part",
+        active: true,
         slug: "faire-part",
         description: "Pour un évenement qui vous correspond et qui vous ressemble. Je vous aide à confectionner vos faire-part.",
         image: "/images/services/faire_part.jpeg"
     },
     {
         title: "Logo & Graphisme",
+        active: true,
         slug: "logo-graphisme",
         description: "Création de votre logo d'entreprise décliné sur les supports de votre choix.",
         image: "/images/services/service_logo.jpeg"
     },
     {
         title: "Mise en page",
+        active: true,
         slug: "mise-en-page",
         description: "Pour embellir vos impressions par une mise en page qui vous correspond. Je vous propose des trames et documents sur-mesure afin de refléter vos valeurs.",
         image: "/images/services/mise_en_page.jpeg"
     },
     {
         title: "Packaging",
+        active: false,
         slug: "packaging",
         description: "Une personnalisation de vos emballages en lien avec votre évenement, soit personnel ou professionel, vous ferez forte impression !",
         image: "/images/services/service_packaging.jpeg"
+    },
+    {
+        title: "Site Web",
+        active: true,
+        slug: "site-web",
+       description: "Un site internet qui devient un outil ou votre vitrine, selon vos besoins !",
+        image: "/images/services/site-web.jpeg"
     },
 ];
 
@@ -52,7 +64,7 @@ const Accompagnements: React.FC = () => {
 
                 <div className="container">
                     <div className="row g-5 justify-content-center">
-                        {servicesData.map((service, index) => (
+                        {servicesData.filter(service => service.active).map((service, index) => (
                             <div key={index} className="col-12 col-md-6 col-lg-4">
                                 <div className="card-service shadow-sm h-100">
                                     <div className="image-wrapper p-3">

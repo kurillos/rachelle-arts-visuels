@@ -74,7 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Redirection automatique pour le lien par défaut de Laravel Breeze
     Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
-    });
+    })->name('dashboard');
 
     // Toutes les routes commençant par /admin/...
     Route::prefix('admin')->group(function () {
