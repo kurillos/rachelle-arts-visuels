@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 define('LARAVEL_START', microtime(true));
 
 // 1. Chemin vers le mode maintenance
-if (file_exists($maintenance = __DIR__.'/../rachelle-v2/storage/framework/maintenance.php')) {
+if (file_exists($maintenance = __DIR__. '/../rachelle-v2/storage/framework/maintenance.php')) {
     require $maintenance;
 }
 

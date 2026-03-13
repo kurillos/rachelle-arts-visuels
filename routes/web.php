@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\CategoryTagController;
 use App\Http\Controllers\Admin\PublicImageController;
 use App\Http\Controllers\Admin\OfferController;
+use App\Http\Controllers\Admin\WebProjectController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Carousel;
@@ -111,6 +112,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/portfolio', [PublicImageController::class, 'store'])->name('admin.portfolio.store');
         Route::patch('/portfolio/{image}', [PublicImageController::class, 'update'])->name('admin.portfolio.update');
         Route::delete('/portfolio/{image}', [PublicImageController::class, 'destroy'])->name('admin.portfolio.destroy');
+
+        // Portfolio Site Web
+        Route::prefix('web-projects')->name('admin.web-projects.')->group(function () {
+        Route::get('/', [WebProjectController::class, 'index'])->name('index');
+        Route::post('/', [WebProjectController::class, 'store'])->name('store');
+        Route::delete('/{project}', [WebProjectController::class, 'destroy'])->name('destroy');
+        });
 
         // Admin Offres (Gérer les offres de services)
         Route::resource('offers', OfferController::class)

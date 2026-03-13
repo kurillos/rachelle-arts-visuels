@@ -10,7 +10,8 @@ import {
     ExternalLink,
     Settings,
     Tag,
-    PenTool // Icône ajoutée pour le graphisme
+    PenTool, // Icône ajoutée pour le graphisme
+    Globe
 } from 'lucide-react';
 
 declare var route: any;
@@ -85,6 +86,15 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                             <Link href={route('admin.galleries.index', { type: 'graphisme' })} 
                                 className={`nav-link-admin ${url.includes('type=graphisme') ? 'active' : ''}`}>
                                 <PenTool size={18} className="me-3" /> Graphisme
+                            </Link>
+                        </li>
+
+                        <div className="admin-nav-separator text-muted small fw-bold mt-4 mb-2 px-3">CRÉATIONS WEB</div>
+
+                        <li className="mb-2">
+                            <Link href={route('admin.web-projects.index')} 
+                                className={`nav-link-admin ${url.startsWith('/admin/web-projects') ? 'active' : ''}`}>
+                                <Globe size={18} className="me-3" /> Sites Web
                             </Link>
                         </li>
 
