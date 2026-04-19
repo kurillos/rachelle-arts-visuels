@@ -31,8 +31,11 @@ class ClientGalleryController extends Controller
 
         // 2. Vérification de la session spécifique à cette galerie
         if (Session::get("gallery_auth_{$gallery->id}")) {
+            $gallery->load('photos');
+            // Aliaser photo_quota → quota pour la vue TypeScript
+            $gallery->quota = $gallery->photo_quota;
             return Inertia::render('Client/Gallery/Show', [
-                'gallery' => $gallery->load('photos'),
+                'gallery' => $gallery,
             ]);
         }
 

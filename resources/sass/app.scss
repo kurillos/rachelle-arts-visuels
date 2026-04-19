@@ -33,8 +33,9 @@ body {
 
     .navbar-brand {
         margin: 0;
+
         img {
-            height: 80px; 
+            height: 80px;
             width: auto;
             object-fit: contain;
         }
@@ -61,9 +62,13 @@ body {
         transform: none !important;
     }
 
-    &:hover, &.active {
+    &:hover,
+    &.active {
         color: $info !important;
-        &::after { width: 100%; }
+
+        &::after {
+            width: 100%;
+        }
     }
 }
 
@@ -73,10 +78,14 @@ body {
     display: inline-block;
     position: relative;
     padding-bottom: 8px;
+
     &::after {
         content: '';
         position: absolute;
-        left: 0; bottom: 0; width: 100%; height: 3px;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 3px;
         background-color: $primary;
     }
 }
@@ -178,12 +187,11 @@ body {
 
 // 9. PAGE : ACCOMPAGNEMENTS (Services)
 .card-service {
-    background: linear-gradient(90deg, 
-        $cyan-main 0%, 
-        $purple-main 100%, 
-        darken($cyan-main, 20%) 100%
-    );
-    
+    background: linear-gradient(90deg,
+            $cyan-main 0%,
+            $purple-main 100%,
+            darken($cyan-main, 20%) 100%);
+
     margin-bottom: 20px;
     margin-top: 30px;
     height: 600px;
@@ -207,6 +215,7 @@ body {
 
     .image-wrapper {
         padding: 15px;
+
         img {
             border-radius: 15px;
             height: 250px;
@@ -220,7 +229,7 @@ body {
         color: black;
         padding: 20px;
         z-index: 1;
-        
+
         .card-title-service {
             font-family: 'Charmonman', sans-serif;
             font-size: 1.8rem;
@@ -228,8 +237,8 @@ body {
             margin-bottom: 20px;
             position: relative;
             display: inline-block;
-            padding-bottom: 5px; 
-            
+            padding-bottom: 5px;
+
             &::after {
                 content: '';
                 position: absolute;
@@ -268,7 +277,7 @@ body {
 // 10. PAGE : CONTACT
 .contact-dark-theme {
     background-color: $dark;
-    
+
     .contact-intro {
         font-family: 'Charm', sans-serif;
         font-size: 1.3rem;
@@ -390,9 +399,10 @@ $cyan-main: #13D4F5;
     }
 
     // État Hover et Actif 
-    &:hover, &.active {
+    &:hover,
+    &.active {
         color: $cyan-main;
-        
+
         &::after {
             width: 100%;
         }
@@ -404,13 +414,13 @@ $cyan-main: #13D4F5;
     columns: 3 300px;
     column-gap: 20px;
     width: 100%;
-    
+
     .masonry-brick {
         display: inline-block;
         width: 100%;
         margin-bottom: 20px;
         break-inside: avoid;
-        
+
         .portfolio-img-card {
             border: 3px solid $purple-main;
             transition: transform 0.3s ease;
@@ -442,7 +452,7 @@ $cyan-main: #13D4F5;
     border-radius: 20px;
     background: white;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    
+
     .admin-card-header {
         background: $purple-main;
         font-family: 'Charmonman', sans-serif;
@@ -453,11 +463,12 @@ $cyan-main: #13D4F5;
 // Zone d'upload stylisée
 .upload-zone-styled {
     cursor: pointer;
+
     .zone-content {
         border: 2px dashed rgba($cyan-main, 0.5);
         background: rgba($cyan-main, 0.02);
         transition: all 0.3s ease;
-        
+
         &:hover {
             background: rgba($cyan-main, 0.08);
             border-color: $cyan-main;
@@ -471,6 +482,7 @@ $cyan-main: #13D4F5;
     border-radius: 10px;
     padding: 12px;
     border: 1px solid #dee2e6;
+
     &:focus {
         border-color: $purple-main;
         box-shadow: 0 0 0 0.25rem rgba($purple-main, 0.1);
@@ -483,7 +495,7 @@ $cyan-main: #13D4F5;
     border: none;
     border-radius: 12px;
     transition: all 0.3s;
-    
+
     &:hover {
         background: $cyan-main;
         color: white;
@@ -526,6 +538,7 @@ $cyan-main: #13D4F5;
 .btn-outline-purple {
     border: 1px solid $purple-main;
     color: $purple-main;
+
     &:hover {
         background-color: $purple-main;
         color: white;
@@ -549,27 +562,48 @@ $cyan-main: #13D4F5;
     }
 }
 
-.bg-success-light { background-color: rgba(40, 167, 69, 0.1); }
-.bg-purple-light { background-color: rgba($purple-main, 0.1); }
-.btn-purple { background-color: $purple-main; color: white; }
-.fill-danger { fill: #dc3545; }
-.fill-white { fill: white; }
+.bg-success-light {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.bg-purple-light {
+    background-color: rgba($purple-main, 0.1);
+}
+
+.btn-purple {
+    background-color: $purple-main;
+    color: white;
+}
+
+.fill-danger {
+    fill: #dc3545;
+}
+
+.fill-white {
+    fill: white;
+}
 
 /* PAGE VISUEL CLIENT */
 .bg-client-auth {
     background: linear-gradient(135deg, #f3e8ff 0%, #ffffff 100%);
 }
 
-.ls-2 { letter-spacing: 2px; }
+.ls-2 {
+    letter-spacing: 2px;
+}
 
 .client-photo-card {
     .photo-overlay {
         position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.2);
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.2);
         opacity: 0;
         transition: opacity 0.3s ease;
     }
+
     &:hover .photo-overlay {
         opacity: 1;
     }
@@ -578,7 +612,10 @@ $cyan-main: #13D4F5;
 .btn-white {
     background: white;
     color: #6366f1;
-    &:hover { background: #f8f9fa; }
+
+    &:hover {
+        background: #f8f9fa;
+    }
 }
 
 /* Bordure de sélection sur les photos */
@@ -617,17 +654,17 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    
+
     // Bloque le menu contextuel sur iPhone/iPad (appui long)
-    -webkit-touch-callout: none; 
+    -webkit-touch-callout: none;
 }
 
 // --- DÉBLOCAGE DU CAROUSEL & ÉLÉMENTS INTERACTIFS ---
 // On redonne la main au Carousel pour qu'il puisse défiler
-.carousel, 
+.carousel,
 .carousel-inner,
-.carousel-control-prev, 
-.carousel-control-next, 
+.carousel-control-prev,
+.carousel-control-next,
 .carousel-indicators,
 .photo-card-client {
     -webkit-user-select: auto !important;
@@ -643,24 +680,70 @@ img {
     -o-user-drag: none;
 }
 
-a, button, input, textarea, .cursor-pointer, [role="button"] {
+a,
+button,
+input,
+textarea,
+.cursor-pointer,
+[role="button"] {
     pointer-events: auto !important;
 }
 
 /* --- PROTECTION IMPRESSION (Média Print) --- */
 @media print {
-    body { 
-        display: none !important; 
+    body {
+        display: none !important;
     }
 }
 
 /* --- CLASSES UTILITAIRES --- */
-.no-select { user-select: none; }
-.no-drag { -webkit-user-drag: none; }
-.rotate-90 { transform: rotate(90deg); }
-.transition-all { transition: all 0.3s ease; }
+.no-select {
+    user-select: none;
+}
 
-.bg-purple-light-soft { background-color: #fdfaff; }
-.btn-purple { background-color: #a855f7; color: white; border: none; }
-.btn-purple:hover { background-color: #9333ea; color: white; }
-.selected-ring { outline: 4px solid #a855f7; outline-offset: -4px; }
+.no-drag {
+    -webkit-user-drag: none;
+}
+
+img.no-drag {
+    pointer-events: none !important;
+}
+
+.photo-card-client {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+.carousel-nav,
+.carousel-close,
+.btn {
+    pointer-events: auto !important;
+}
+
+.rotate-90 {
+    transform: rotate(90deg);
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.bg-purple-light-soft {
+    background-color: #fdfaff;
+}
+
+.btn-purple {
+    background-color: #a855f7;
+    color: white;
+    border: none;
+}
+
+.btn-purple:hover {
+    background-color: #9333ea;
+    color: white;
+}
+
+.selected-ring {
+    outline: 4px solid #a855f7;
+    outline-offset: -4px;
+}

@@ -36,12 +36,9 @@ Route::get('/reviews', function () {
     return Inertia::render('Reviews');
 })->name('reviews');
 
-// Groupe Portfolio Propre
+// Groupe Portfolio
 Route::prefix('portfolio')->group(function () {
-    // URL: /portfolio (Tout voir)
     Route::get('/', [PortfolioController::class, 'index'])->name('portfolio.index');
-
-    // URL: /portfolio/photographie (Voir un métier)
     Route::get('/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
 });
 
@@ -49,24 +46,38 @@ Route::prefix('portfolio')->group(function () {
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
-// Routes publiques pour les clients
+// ─────────────────────────────────────────────────────────────────────────────
+// Routes Galerie Client
+// ─────────────────────────────────────────────────────────────────────────────
 Route::prefix('client/gallery')->group(function () {
-    // 1. Inscription (Lien du mail)
-    Route::get('/{slug}/register', [ClientGalleryController::class, 'registerForm'])->name('client.gallery.register');
-    Route::post('/{slug}/register', [ClientGalleryController::class, 'register.store'])->name('client.gallery.register.store');
-    Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
 
-    // 2. Connexion classique
-    Route::post('/{slug}/login', [ClientGalleryController::class, 'login'])->name('client.gallery.login');
+    // 1. Inscription depuis le lien du mail
+    Route::get('/{slug}/register', [ClientGalleryController::class, 'registerForm'])
+        ->name('client.gallery.register');
 
-    // 3. Actions (Favoris)
-    Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])->name('client.gallery.favorite');
+    // ✅ CORRECTION : nom de méthode valide (pas de point) + méthode correcte (storeRegister)
+    Route::post('/{slug}/register', [ClientGalleryController::class, 'storeRegister'])
+        ->name('client.gallery.register.store');
 
-    // 4. Commentaires 
-    Route::post('/photo/{photo}/comment', [ClientGalleryController::class, 'updatePhotoComment'])->name('client.gallery.photo.comment');
+    // 2. Affichage de la galerie (login ou galerie selon session)
+    Route::get('/{slug}', [ClientGalleryController::class, 'show'])
+        ->name('client.gallery.show');
 
-    // 5. Validation de la sélection finale (Action finale du client)
-    Route::post('/{slug}/validate', [ClientGalleryController::class, 'validateSelection'])->name('client.gallery.validate');
+    // 3. Connexion avec mot de passe
+    Route::post('/{slug}/login', [ClientGalleryController::class, 'login'])
+        ->name('client.gallery.login');
+
+    // 4. Toggle favori (cœur)
+    Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])
+        ->name('client.gallery.favorite');
+
+    // 5. Commentaire / note de retouche
+    Route::post('/photo/{photo}/comment', [ClientGalleryController::class, 'updatePhotoComment'])
+        ->name('client.gallery.photo.comment');
+
+    // 6. Validation finale de la sélection
+    Route::post('/{slug}/validate', [ClientGalleryController::class, 'validateSelection'])
+        ->name('client.gallery.validate');
 });
 
 /*
@@ -77,33 +88,31 @@ Route::prefix('client/gallery')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Redirection automatique pour le lien par défaut de Laravel Breeze
     Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     })->name('dashboard');
 
-    // Toutes les routes commençant par /admin/...
     Route::prefix('admin')->group(function () {
 
         // Accueil Admin
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-        // Gestion du Carrousel (Vitrine)
+        // Carrousel
         Route::get('/carousel', [AdminDashboardController::class, 'index'])->name('admin.carousel.index');
         Route::post('/carousel/upload', [AdminDashboardController::class, 'upload'])->name('admin.carousel.upload');
         Route::delete('/carousel/{id}', [AdminDashboardController::class, 'destroy'])->name('admin.carousel.destroy');
 
-        // Gestion des Galeries Privées (Mariages & Shootings)
+        // Galeries Privées
         Route::prefix('galleries')->name('admin.galleries.')->group(function () {
             Route::get('/', [GalleryController::class, 'index'])->name('index');
             Route::post('/', [GalleryController::class, 'store'])->name('store');
             Route::get('/{gallery}', [GalleryController::class, 'show'])->name('show');
             Route::delete('/{gallery}', [GalleryController::class, 'destroy'])->name('destroy');
             Route::post('/{gallery}/send-invitation', [GalleryController::class, 'sendInvitation'])->name('send');
-            Route::post('/{gallery}/upload', [GalleryController::class, 'upload'])->name('upload'); // ← ajouter
+            Route::post('/{gallery}/upload', [GalleryController::class, 'upload'])->name('upload');
         });
 
-        // Gestion des Catégories & Tags
+        // Catégories & Tags
         Route::get('/settings/categories-tags', [CategoryTagController::class, 'index'])->name('admin.settings.index');
         Route::post('/settings/categories', [CategoryTagController::class, 'storeCategory'])->name('admin.categories.store');
         Route::post('/settings/tags', [CategoryTagController::class, 'storeTag'])->name('admin.tags.store');
@@ -112,8 +121,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/settings/categories/{category}', [CategoryTagController::class, 'updateCategory'])->name('admin.categories.update');
         Route::patch('/settings/tags/{tag}', [CategoryTagController::class, 'updateTag'])->name('admin.tags.update');
 
-
-        // Portfolio Public (Gérer les images visibles sur le site)
+        // Portfolio Public
         Route::get('/portfolio', [PublicImageController::class, 'index'])->name('admin.portfolio.index');
         Route::post('/portfolio', [PublicImageController::class, 'store'])->name('admin.portfolio.store');
         Route::patch('/portfolio/{image}', [PublicImageController::class, 'update'])->name('admin.portfolio.update');
@@ -126,18 +134,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('/{project}', [WebProjectController::class, 'destroy'])->name('destroy');
         });
 
-        // Admin Offres (Gérer les offres de services)
+        // Offres
         Route::resource('offers', OfferController::class)
             ->names([
-                'index' => 'admin.offers.index',
-                'store' => 'admin.offers.store',
+                'index'   => 'admin.offers.index',
+                'store'   => 'admin.offers.store',
                 'destroy' => 'admin.offers.destroy',
             ])
             ->except(['create', 'edit', 'show']);
 
-        /*
-        | Gestion du Profil Utilisateur (Breeze)
-        */
+        // Profil
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
