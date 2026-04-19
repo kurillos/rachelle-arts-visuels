@@ -152,4 +152,60 @@ class GalleryController extends Controller
         $gallery->update(['status' => 'envoyé']);
         return back()->with('success', "L'invitation a été envoyée !");
     }
+
+    public function upload(Request $request, Gallery $gallery)
+    {
+        ini_set('memory_limit', '512M');
+
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,webp|max:20480',
+        ]);
+
+        try {
+            $file = $request->file('photo');
+            $image = Image::read($file);
+            $image->scale(width: 2000);
+
+            // Filigrane
+            try {
+                $logoPath = public_path('images/logo.png');
+                if (file_exists($logoPath)) {
+                    $watermark = Image::read($logoPath);
+                    $watermark->scale(width: 500);
+                    $image->place($watermark, 'center', opacity: 35);
+                }
+            } catch (\Exception $e) {
+                Log::error("Erreur Watermark : " . $e->getMessage());
+            }
+
+            $encoded = $image->toJpeg(80);
+
+            $folder = match ($gallery->type) {
+                'mariage'   => 'mariages',
+                'shooting'  => 'shootings',
+                'graphisme' => 'graphisme',
+                default     => 'autres'
+            };
+
+            $filename = uniqid() . '.jpg';
+            $path = "galleries/{$folder}/{$gallery->slug}/{$filename}";
+
+            Storage::disk('s3')->put($path, (string) $encoded);
+
+            $photo = GalleryPhoto::create([
+                'gallery_id' => $gallery->id,
+                'image_path' => $path,
+                'title'      => $file->getClientOriginalName(),
+                'sort_order' => $gallery->photos()->count(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'photo'   => $photo,
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Erreur upload photo : " . $e->getMessage());
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
 }
