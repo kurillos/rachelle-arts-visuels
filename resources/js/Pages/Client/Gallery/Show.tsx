@@ -55,7 +55,6 @@ export default function Show({ gallery }: Props) {
         setCarouselIndex((carouselIndex + 1) % photos.length);
     }, [carouselIndex, photos.length]);
 
-    // Navigation clavier dans le carousel
     useEffect(() => {
         if (carouselIndex === null) return;
         const handler = (e: KeyboardEvent) => {
@@ -194,13 +193,19 @@ export default function Show({ gallery }: Props) {
                     <div className="row g-3 g-md-4">
                         {photos.map((photo, index) => (
                             <div key={photo.id} className="col-6 col-md-4 col-xl-3">
-                                <div className={`card border-0 rounded-4 ...`}>
+                                {/* ── Correction carousel : onClick sur position-relative, pas sur .card ── */}
+                                <div className={`card border-0 rounded-4 shadow-sm overflow-hidden photo-card-client ${photo.is_selected ? 'selected-ring' : ''}`}>
                                     <div
                                         className="position-relative"
                                         onClick={() => openCarousel(index)}
                                         style={{ cursor: 'pointer' }}
                                     >
-                                        <img ... className="img-fluid ... no-drag" />
+                                        <img
+                                            src={photo.full_url}
+                                            className="img-fluid object-fit-cover w-100 no-drag"
+                                            style={{ aspectRatio: '3/4' }}
+                                            alt={photo.title}
+                                        />
                                         <div className="position-absolute top-0 end-0 m-2 d-flex flex-column gap-2">
                                             <button
                                                 onClick={(e) => toggleFavorite(photo.id, e)}
@@ -256,7 +261,6 @@ export default function Show({ gallery }: Props) {
                             )}
                         </div>
 
-                        {/* Miniatures cliquables → ouvre le carousel */}
                         <div className="flex-grow-1 overflow-auto p-3">
                             {selections.length === 0 ? (
                                 <p className="text-muted small text-center mt-4">Cliquez sur ❤️ pour ajouter des photos.</p>
@@ -268,7 +272,7 @@ export default function Show({ gallery }: Props) {
                                             <div key={p.id} className="col-4 position-relative mb-2">
                                                 <img
                                                     src={p.full_url}
-                                                    className="img-fluid rounded-3 border no-drag sidebar-thumb"
+                                                    className="img-fluid rounded-3 border sidebar-thumb"
                                                     style={{ aspectRatio: '1/1', objectFit: 'cover', cursor: 'pointer' }}
                                                     alt={p.title}
                                                     onClick={() => openCarousel(idx)}
@@ -310,7 +314,7 @@ export default function Show({ gallery }: Props) {
                     </button>
 
                     <div className="carousel-content" onClick={(e) => e.stopPropagation()}>
-                        <img src={currentCarouselPhoto.full_url} className="carousel-img no-drag" alt={currentCarouselPhoto.title} />
+                        <img src={currentCarouselPhoto.full_url} className="carousel-img" alt={currentCarouselPhoto.title} />
                         <div className="carousel-toolbar">
                             <span className="text-white small opacity-75">{carouselIndex! + 1} / {photos.length}</span>
                             <div className="d-flex gap-2">
@@ -347,7 +351,7 @@ export default function Show({ gallery }: Props) {
                         <div className="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
                             <div className="row g-0">
                                 <div className="col-4">
-                                    <img src={editingPhoto.full_url} className="img-fluid h-100 object-fit-cover no-drag" alt="" />
+                                    <img src={editingPhoto.full_url} className="img-fluid h-100 object-fit-cover" alt="" />
                                 </div>
                                 <div className="col-8 p-4">
                                     <h5 className="fw-bold mb-1">Notes de retouche</h5>
@@ -378,7 +382,9 @@ export default function Show({ gallery }: Props) {
 
             <style>{`
                 .no-select { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
-                .no-drag   { -webkit-user-drag:none; pointer-events:none !important; }
+                /* ── Correction : no-drag sur img uniquement, pas pointer-events global ── */
+                .no-drag { -webkit-user-drag:none; }
+                img.no-drag { pointer-events:none !important; }
                 @media print { body { display:none !important; } }
 
                 .bg-purple-light-soft { background-color:#fdfaff; }
@@ -434,6 +440,7 @@ export default function Show({ gallery }: Props) {
                 .carousel-img {
                     max-height:82vh; max-width:100%;
                     object-fit:contain; border-radius:12px; display:block;
+                    -webkit-user-drag:none;
                 }
                 .carousel-toolbar {
                     display:flex; align-items:center; justify-content:space-between;
