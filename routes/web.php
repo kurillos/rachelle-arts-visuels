@@ -26,15 +26,21 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
-Route::get('/about', function () { return Inertia::render('About'); })->name('about');
-Route::get('/services', function () { return Inertia::render('Services'); })->name('services');
-Route::get('/reviews', function () { return Inertia::render('Reviews'); })->name('reviews');
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+Route::get('/services', function () {
+    return Inertia::render('Services');
+})->name('services');
+Route::get('/reviews', function () {
+    return Inertia::render('Reviews');
+})->name('reviews');
 
 // Groupe Portfolio Propre
 Route::prefix('portfolio')->group(function () {
     // URL: /portfolio (Tout voir)
     Route::get('/', [PortfolioController::class, 'index'])->name('portfolio.index');
-    
+
     // URL: /portfolio/photographie (Voir un métier)
     Route::get('/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
 });
@@ -51,9 +57,8 @@ Route::prefix('client/gallery')->group(function () {
     Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
 
     // 2. Connexion classique
-    Route::get('/{slug}', [ClientGalleryController::class, 'show'])->name('client.gallery.show');
     Route::post('/{slug}/login', [ClientGalleryController::class, 'login'])->name('client.gallery.login');
-    
+
     // 3. Actions (Favoris)
     Route::post('/photo/{photo}/favorite', [ClientGalleryController::class, 'toggleFavorite'])->name('client.gallery.favorite');
 
@@ -71,7 +76,7 @@ Route::prefix('client/gallery')->group(function () {
 */
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Redirection automatique pour le lien par défaut de Laravel Breeze
     Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
@@ -79,10 +84,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Toutes les routes commençant par /admin/...
     Route::prefix('admin')->group(function () {
-        
+
         // Accueil Admin
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-        
+
         // Gestion du Carrousel (Vitrine)
         Route::get('/carousel', [AdminDashboardController::class, 'index'])->name('admin.carousel.index');
         Route::post('/carousel/upload', [AdminDashboardController::class, 'upload'])->name('admin.carousel.upload');
@@ -95,6 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{gallery}', [GalleryController::class, 'show'])->name('show');
             Route::delete('/{gallery}', [GalleryController::class, 'destroy'])->name('destroy');
             Route::post('/{gallery}/send-invitation', [GalleryController::class, 'sendInvitation'])->name('send');
+            Route::post('/{gallery}/upload', [GalleryController::class, 'upload'])->name('upload'); // ← ajouter
         });
 
         // Gestion des Catégories & Tags
@@ -108,25 +114,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
         // Portfolio Public (Gérer les images visibles sur le site)
-        Route::get('/portfolio', [PublicImageController::class, 'index'])->name('admin.portfolio.index');   
+        Route::get('/portfolio', [PublicImageController::class, 'index'])->name('admin.portfolio.index');
         Route::post('/portfolio', [PublicImageController::class, 'store'])->name('admin.portfolio.store');
         Route::patch('/portfolio/{image}', [PublicImageController::class, 'update'])->name('admin.portfolio.update');
         Route::delete('/portfolio/{image}', [PublicImageController::class, 'destroy'])->name('admin.portfolio.destroy');
 
         // Portfolio Site Web
         Route::prefix('web-projects')->name('admin.web-projects.')->group(function () {
-        Route::get('/', [WebProjectController::class, 'index'])->name('index');
-        Route::post('/', [WebProjectController::class, 'store'])->name('store');
-        Route::delete('/{project}', [WebProjectController::class, 'destroy'])->name('destroy');
+            Route::get('/', [WebProjectController::class, 'index'])->name('index');
+            Route::post('/', [WebProjectController::class, 'store'])->name('store');
+            Route::delete('/{project}', [WebProjectController::class, 'destroy'])->name('destroy');
         });
 
         // Admin Offres (Gérer les offres de services)
         Route::resource('offers', OfferController::class)
             ->names([
-                    'index' => 'admin.offers.index',
-                    'store' => 'admin.offers.store',
-                    'destroy' => 'admin.offers.destroy',
-                ])
+                'index' => 'admin.offers.index',
+                'store' => 'admin.offers.store',
+                'destroy' => 'admin.offers.destroy',
+            ])
             ->except(['create', 'edit', 'show']);
 
         /*
@@ -138,4 +144,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

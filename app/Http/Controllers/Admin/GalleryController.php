@@ -39,10 +39,10 @@ class GalleryController extends Controller
             'title' => 'required|string|max:255',
             'client_name' => 'nullable|string|max:255',
             'client_email' => 'nullable|email|max:255',
-            'type' => 'required|in:mariage,shooting,graphisme', 
+            'type' => 'required|in:mariage,shooting,graphisme',
             'offer_id' => 'required|exists:offers,id',
             'password' => 'required|string|min:4',
-            'images' => 'required|array',
+            'images' => 'nullable|array',
             'event_date' => 'nullable|date',
             'expires_at' => 'nullable|date',
         ]);
@@ -56,7 +56,7 @@ class GalleryController extends Controller
                 'client_email' => $request->client_email,
                 'type' => $request->type,
                 'offer_id' => $request->offer_id,
-                'photo_quota' => $offer->quota, 
+                'photo_quota' => $offer->quota,
                 'extra_photo_price' => $offer->extra_price ?? 10,
                 'password' => $request->password,
                 'event_date' => $request->event_date,
@@ -66,36 +66,36 @@ class GalleryController extends Controller
 
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $file) {
-                    
+
                     $image = Image::read($file);
                     $image->scale(width: 2000);
 
 
-                // Logique de filigrane sécurisée
-                try {
-                    $logoPath = public_path('images/logo.png');
+                    // Logique de filigrane sécurisée
+                    try {
+                        $logoPath = public_path('images/logo.png');
 
-                    if (file_exists($logoPath)) {
-                        // 1. On lit le logo d'abord
-                        $watermark = Image::read($logoPath);
-        
-                        // 2. On redimensionne le logo
-                        $watermark->scale(width: 500); 
+                        if (file_exists($logoPath)) {
+                            // 1. On lit le logo d'abord
+                            $watermark = Image::read($logoPath);
 
-                        // 3. On applique le logo au centre
-                        $image->place($watermark, 'center', opacity: 35);
-                    } else {
-                        \Log::warning("Le logo n'a pas été trouvé au chemin : " . $logoPath);
+                            // 2. On redimensionne le logo
+                            $watermark->scale(width: 500);
+
+                            // 3. On applique le logo au centre
+                            $image->place($watermark, 'center', opacity: 35);
+                        } else {
+                            \Log::warning("Le logo n'a pas été trouvé au chemin : " . $logoPath);
+                        }
+                    } catch (\Exception $e) {
+                        // Si une erreur survient (format non supporté, etc.), on log l'erreur
+                        // Mais on n'affiche plus de spirales car l'image originale reste intacte
+                        \Log::error("Erreur Watermark : " . $e->getMessage());
                     }
-                } catch (\Exception $e) {
-                // Si une erreur survient (format non supporté, etc.), on log l'erreur
-                // Mais on n'affiche plus de spirales car l'image originale reste intacte
-                    \Log::error("Erreur Watermark : " . $e->getMessage());
-                }
 
-                $encoded = $image->toJpeg(80);
+                    $encoded = $image->toJpeg(80);
 
-                    $folder = match($gallery->type) {
+                    $folder = match ($gallery->type) {
                         'mariage' => 'mariages',
                         'shooting' => 'shootings',
                         'graphisme' => 'graphisme',
@@ -117,7 +117,6 @@ class GalleryController extends Controller
             }
 
             return redirect()->back()->with('success', "Galerie créée avec succès.");
-
         } catch (\Exception $e) {
             Log::error("Erreur Store Gallery : " . $e->getMessage());
             return back()->with('error', "Erreur technique : " . $e->getMessage());
@@ -126,7 +125,7 @@ class GalleryController extends Controller
 
     public function destroy(Gallery $gallery)
     {
-        $folder = match($gallery->type) {
+        $folder = match ($gallery->type) {
             'mariage' => 'mariages',
             'shooting' => 'shootings',
             'graphisme' => 'graphisme',

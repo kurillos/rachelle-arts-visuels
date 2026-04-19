@@ -3,8 +3,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
     ChevronLeft, Heart, Share2, ExternalLink, Download,
-    Layers, Calendar, User, Timer, UploadCloud, CheckCircle,
-    XCircle, Loader2, MessageSquare // ← ajouté : pour l'icône commentaire
+    Layers, Calendar, User, Timer, UploadCloud, CheckCircle, XCircle, Loader2
 } from 'lucide-react';
 import axios from 'axios';
 // @ts-ignore
@@ -16,7 +15,6 @@ interface Photo {
     title: string;
     is_selected: boolean;
     full_url: string;
-    client_comment?: string; // ← ajouté : nécessaire pour afficher l'indicateur commentaire
 }
 
 interface Gallery {
@@ -95,6 +93,7 @@ export default function Show({ auth, gallery }: Props) {
             currentIndex: files.length
         }));
 
+        // Rafraîchir pour afficher les photos
         router.reload({ only: ['gallery'] });
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
@@ -104,9 +103,6 @@ export default function Show({ auth, gallery }: Props) {
         : gallery.photos;
 
     const favoritesCount = gallery.photos.filter(p => p.is_selected).length;
-
-    // ← ajouté : compte les photos ayant un commentaire client
-    const commentsCount = gallery.photos.filter(p => p.client_comment).length;
 
     const calculateDaysLeft = () => {
         if (!gallery.expires_at) return 0;
@@ -228,7 +224,6 @@ export default function Show({ auth, gallery }: Props) {
                     {/* COLONNE GRILLE PHOTOS */}
                     <div className="col-lg-8">
                         <div className="d-flex justify-content-between align-items-center mb-4">
-                            {/* ← MODIFICATION : bouton enrichi avec le compteur de commentaires */}
                             <div className="btn-group bg-white shadow-sm p-1 rounded-3">
                                 <button
                                     onClick={() => setFilterFavorites(false)}
@@ -238,22 +233,10 @@ export default function Show({ auth, gallery }: Props) {
                                 </button>
                                 <button
                                     onClick={() => setFilterFavorites(true)}
-                                    className={`btn btn-sm px-4 d-flex align-items-center gap-2 ${filterFavorites ? 'btn-purple text-white shadow-sm' : 'btn-light'}`}
+                                    className={`btn btn-sm px-4 ${filterFavorites ? 'btn-purple text-white shadow-sm' : 'btn-light'}`}
                                 >
-                                    {/* Cœur plein si filtre actif, vide sinon */}
-                                    <Heart
-                                        size={14}
-                                        fill={filterFavorites ? 'white' : 'none'}
-                                        stroke={filterFavorites ? 'white' : 'currentColor'}
-                                    />
-                                    Sélection ({favoritesCount})
-                                    {/* Badge commentaires affiché si au moins un commentaire existe */}
-                                    {commentsCount > 0 && (
-                                        <span className={`badge rounded-pill ${filterFavorites ? 'bg-white text-purple' : 'bg-info text-white'}`} style={{ fontSize: '0.65rem' }}>
-                                            <MessageSquare size={10} className="me-1" />
-                                            {commentsCount}
-                                        </span>
-                                    )}
+                                    <Heart size={14} className={`me-2 ${filterFavorites ? 'fill-white' : ''}`} />
+                                    Sélection Client ({favoritesCount})
                                 </button>
                             </div>
                         </div>
@@ -272,36 +255,18 @@ export default function Show({ auth, gallery }: Props) {
                                                         e.currentTarget.src = `https://placehold.co/400x400/f3f0ff/6366f1?text=${photo.title}`;
                                                     }}
                                                 />
-                                                {/* ← MODIFICATION : badges cœur ET bulle côté admin */}
-                                                <div className="position-absolute top-0 end-0 p-2 d-flex flex-column gap-1">
-                                                    {photo.is_selected && (
+                                                {photo.is_selected && (
+                                                    <div className="position-absolute top-0 end-0 p-2">
                                                         <span className="badge bg-danger rounded-pill shadow-sm d-flex align-items-center">
-                                                            {/* Cœur PLEIN = favori confirmé */}
-                                                            <Heart size={12} fill="white" stroke="white" className="me-1" /> Favori
+                                                            <Heart size={12} className="fill-white me-1" /> Sélection
                                                         </span>
-                                                    )}
-                                                    {photo.client_comment && (
-                                                        <span
-                                                            className="badge bg-info rounded-pill shadow-sm d-flex align-items-center"
-                                                            title={photo.client_comment} // tooltip natif au survol
-                                                            style={{ cursor: 'help' }}
-                                                        >
-                                                            {/* Bulle PLEINE = commentaire présent */}
-                                                            <MessageSquare size={12} fill="white" stroke="white" className="me-1" /> Note
-                                                        </span>
-                                                    )}
-                                                </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="p-3 border-top bg-white">
                                                 <p className="small fw-bold mb-0 text-truncate text-dark" title={photo.title}>
                                                     {photo.title}
                                                 </p>
-                                                {/* ← AJOUT : aperçu du commentaire client sous le titre */}
-                                                {photo.client_comment && (
-                                                    <p className="small text-muted mb-1 mt-1 text-truncate" title={photo.client_comment} style={{ fontSize: '0.7rem', fontStyle: 'italic' }}>
-                                                        "{photo.client_comment}"
-                                                    </p>
-                                                )}
                                                 <div className="d-flex justify-content-between align-items-center mt-2">
                                                     <span className="text-muted" style={{ fontSize: '0.7rem' }}>
                                                         ID: #{photo.id}
@@ -316,11 +281,7 @@ export default function Show({ auth, gallery }: Props) {
                                 ))
                             ) : (
                                 <div className="col-12 text-center py-5 bg-white rounded-4 shadow-sm">
-                                    <p className="text-muted mb-0">
-                                        {filterFavorites
-                                            ? 'Le client n\'a pas encore fait de sélection.'
-                                            : 'Aucune photo dans cette galerie pour le moment.'}
-                                    </p>
+                                    <p className="text-muted mb-0">Aucune photo dans cette galerie pour le moment.</p>
                                 </div>
                             )}
                         </div>

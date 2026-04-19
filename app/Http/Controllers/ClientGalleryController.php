@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Gallery;
 use App\Models\GalleryPhoto;
 use App\Models\User;
+use App\Mail\SelectionValidated; // ← ajouté : manquait, causait une erreur fatale
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;  // ← ajouté : manquait, causait une erreur fatale
 use Illuminate\Support\Facades\URL;
 
 class ClientGalleryController extends Controller
@@ -30,7 +32,6 @@ class ClientGalleryController extends Controller
         // 2. Vérification de la session spécifique à cette galerie
         if (Session::get("gallery_auth_{$gallery->id}")) {
             return Inertia::render('Client/Gallery/Show', [
-                // On charge les photos avec l'accessor full_url via le modèle
                 'gallery' => $gallery->load('photos'),
             ]);
         }
@@ -54,7 +55,6 @@ class ClientGalleryController extends Controller
         ]);
 
         if ($request->password === $gallery->password) {
-            // On marque la session comme autorisée pour CETTE galerie
             Session::put("gallery_auth_{$gallery->id}", true);
             return redirect()->route('client.gallery.show', $slug);
         }
@@ -67,7 +67,6 @@ class ClientGalleryController extends Controller
      */
     public function toggleFavorite(GalleryPhoto $photo)
     {
-        // On change le boolean
         $photo->update([
             'is_selected' => !$photo->is_selected
         ]);
@@ -76,52 +75,49 @@ class ClientGalleryController extends Controller
     }
 
     /**
-    * Affiche le formulaire d'inscription via le lien du mail
-    */
+     * Affiche le formulaire d'inscription via le lien du mail
+     */
     public function registerForm($slug)
     {
         $gallery = Gallery::where('slug', $slug)->firstOrFail();
 
-        // Si le client a déjà ouvert sa galerie, on peut imaginer changer le statut ici aussi
         if ($gallery->status === 'envoyé') {
             $gallery->update(['status' => 'ouvert']);
         }
 
         return Inertia::render('Client/Register', [
             'gallery' => [
-            'title' => $gallery->title,
-            'client_name' => $gallery->client_name,
-            'slug' => $gallery->slug,
-            'expires_at' => $gallery->expires_at, // Pour le timer !
+                'title'       => $gallery->title,
+                'client_name' => $gallery->client_name,
+                'slug'        => $gallery->slug,
+                'expires_at'  => $gallery->expires_at,
             ]
         ]);
     }
 
     /**
-    * Enregistre le client et lie la galerie à son nouveau compte
-    */
+     * Enregistre le client et lie la galerie à son nouveau compte
+     */
     public function register(Request $request, $slug)
     {
         $request->validate([
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string',
-            'password' => 'required|confirmed|min:8',
-            'cgv' => 'accepted',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email',
+            'phone'      => 'required|string',
+            'password'   => 'required|confirmed|min:8',
+            'cgv'        => 'accepted',
         ]);
 
-        // 1. Création de l'utilisateur (on peut lui donner un rôle 'client')
         $user = User::create([
-            'name' => $request->first_name . ' ' . $request->last_name,
-            'email' => $request->email,
+            'name'     => $request->first_name . ' ' . $request->last_name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'phone' => $request->phone, 
+            'phone'    => $request->phone,
         ]);
 
-        // 2. Liaison de la galerie à l'user_id ici 
         $gallery = Gallery::where('slug', $slug)->first();
-        $gallery->update(['password' => null]); // Le mdp de la galerie devient inutile car l'user est logué
+        $gallery->update(['password' => null]);
 
         return redirect()->route('client.gallery.login', $slug)
             ->with('success', 'Votre compte a été créé avec succès. Connectez-vous pour voir vos photos.');
@@ -133,29 +129,33 @@ class ClientGalleryController extends Controller
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'password' => 'required|string|min:6|confirmed',
+            'last_name'  => 'required|string|max:255',
+            'phone'      => 'required|string|max:20',
+            'password'   => 'required|string|min:6|confirmed',
         ]);
 
         $gallery->update([
-            'client_name' => $validated['first_name'] . ' ' . $validated['last_name'],
-            'password' => $validated['password'],
-            'status' => 'en cours',
+            'client_name'  => $validated['first_name'] . ' ' . $validated['last_name'],
+            'password'     => $validated['password'],
+            'status'       => 'en cours',
             'client_notes' => 'Compte initialisé le ' . now()->format('d/m/Y'),
         ]);
 
-        // On peut ici connecter le client manuellement en session
-        session(['gallery_authenticated' => $gallery->id]);
+        // Alignement avec la clé utilisée par login() et updatePhotoComment()
+        Session::put("gallery_auth_{$gallery->id}", true);
 
         return redirect()->route('client.gallery.show', $slug)
-                     ->with('success', 'Bienvenue ! Votre espace est prêt.');
+            ->with('success', 'Bienvenue ! Votre espace est prêt.');
     }
 
+    /**
+     * Enregistre la note de retouche d'une photo.
+     * Correction : utilise la même clé de session que login() → "gallery_auth_{id}"
+     */
     public function updatePhotoComment(Request $request, GalleryPhoto $photo)
     {
-        // Sécurité : on vérifie que la photo appartient bien à une galerie authentifiée en session
-        if (session('gallery_authenticated') !== $photo->gallery_id) {
+        // ← CORRECTION : clé alignée avec celle définie dans login() et storeRegister()
+        if (! Session::get("gallery_auth_{$photo->gallery_id}")) {
             return back()->with('error', 'Action non autorisée.');
         }
 
@@ -170,28 +170,25 @@ class ClientGalleryController extends Controller
         return back()->with('success', 'Note de retouche enregistrée.');
     }
 
+    /**
+     * Valide la sélection du client et envoie un mail à Rachelle.
+     * Corrections : import Mail + SelectionValidated, syntaxe PHP $gallery->title
+     */
     public function validateSelection($slug)
     {
         $gallery = Gallery::where('slug', $slug)->with('photos')->firstOrFail();
-    
-        // On récupère uniquement les photos sélectionnées
-        $selections = $gallery->photos()->where('is_selected', true)->get();
-    
-        // Mise à jour du statut de la galerie
-        $gallery->update([
-            'status' => 'sélectionnée', // Le badge passera en violet chez Rachelle !
-        ]);
 
+        $selections = $gallery->photos()->where('is_selected', true)->get();
+
+        // ← Une seule mise à jour (le doublon a été supprimé)
         $gallery->update(['status' => 'sélectionnée']);
 
+        // ← Mail et import corrigés
         Mail::to('rachelle.artsvisuels@gmail.com')->send(new SelectionValidated($gallery));
 
-    // Optionnel : Envoyer un mail auto à Rachelle pour la prévenir
-    // Mail::to('rachelle@exemple.com')->send(new SelectionValidatedMail($gallery));
-
-    return Inertia::render('Client/Thanks', [
-        'title' => $gallery.title,
-        'count' => $selections->count()
-    ]);
-}
+        return Inertia::render('Client/Thanks', [
+            'title' => $gallery->title,  // ← CORRECTION : -> au lieu de .
+            'count' => $selections->count(),
+        ]);
+    }
 }
