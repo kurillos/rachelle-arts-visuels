@@ -55,6 +55,7 @@ export default function Show({ gallery }: Props) {
         setCarouselIndex((carouselIndex + 1) % photos.length);
     }, [carouselIndex, photos.length]);
 
+    // Navigation clavier dans le carousel
     useEffect(() => {
         if (carouselIndex === null) return;
         const handler = (e: KeyboardEvent) => {
@@ -75,7 +76,6 @@ export default function Show({ gallery }: Props) {
 
     // ── Protection anti-téléchargement ──────────────────────────────────────
     useEffect(() => {
-        const noCtx = (e: MouseEvent) => e.preventDefault();
         const noKey = (e: KeyboardEvent) => {
             if (
                 e.key === 'F12' ||
@@ -87,6 +87,7 @@ export default function Show({ gallery }: Props) {
                 alert('🔒 Le téléchargement est désactivé pour protéger les droits d\'auteur.');
             }
         };
+        const noCtx = (e: MouseEvent) => e.preventDefault();
         document.addEventListener('contextmenu', noCtx, true);
         document.addEventListener('keydown', noKey, true);
         return () => {
@@ -193,17 +194,16 @@ export default function Show({ gallery }: Props) {
                     <div className="row g-3 g-md-4">
                         {photos.map((photo, index) => (
                             <div key={photo.id} className="col-6 col-md-4 col-xl-3">
-                                {/* ── Correction carousel : onClick sur position-relative, pas sur .card ── */}
-                                <div className={`card border-0 rounded-4 shadow-sm overflow-hidden photo-card-client ${photo.is_selected ? 'selected-ring' : ''}`}>
-                                    <div
-                                        className="position-relative"
-                                        onClick={() => openCarousel(index)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
+                                <div
+                                    className={`card border-0 rounded-4 shadow-sm overflow-hidden photo-card-client ${photo.is_selected ? 'selected-ring' : ''}`}
+                                    onClick={() => openCarousel(index)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <div className="position-relative">
                                         <img
                                             src={photo.full_url}
                                             className="img-fluid object-fit-cover w-100 no-drag"
-                                            style={{ aspectRatio: '3/4' }}
+                                            style={{ aspectRatio: '3/4', pointerEvents: 'none' }}
                                             alt={photo.title}
                                         />
                                         <div className="position-absolute top-0 end-0 m-2 d-flex flex-column gap-2">
@@ -314,12 +314,17 @@ export default function Show({ gallery }: Props) {
                     </button>
 
                     <div className="carousel-content" onClick={(e) => e.stopPropagation()}>
-                        <img src={currentCarouselPhoto.full_url} className="carousel-img" alt={currentCarouselPhoto.title} />
+                        <img
+                            src={currentCarouselPhoto.full_url}
+                            className="carousel-img"
+                            style={{ pointerEvents: 'none' }}
+                            alt={currentCarouselPhoto.title}
+                        />
                         <div className="carousel-toolbar">
                             <span className="text-white small opacity-75">{carouselIndex! + 1} / {photos.length}</span>
                             <div className="d-flex gap-2">
                                 <button
-                                    onClick={() => toggleFavorite(currentCarouselPhoto.id)}
+                                    onClick={(e) => { e.stopPropagation(); toggleFavorite(currentCarouselPhoto.id); }}
                                     className={`btn btn-sm rounded-pill px-3 d-flex align-items-center gap-2 ${currentCarouselPhoto.is_selected ? 'btn-purple' : 'btn-light'}`}
                                 >
                                     {loadingFavorite === currentCarouselPhoto.id
@@ -329,7 +334,7 @@ export default function Show({ gallery }: Props) {
                                     {currentCarouselPhoto.is_selected ? 'Sélectionnée' : 'Sélectionner'}
                                 </button>
                                 <button
-                                    onClick={(e) => { closeCarousel(); openComment(currentCarouselPhoto, e); }}
+                                    onClick={(e) => { e.stopPropagation(); closeCarousel(); openComment(currentCarouselPhoto, e); }}
                                     className={`btn btn-sm rounded-pill px-3 d-flex align-items-center gap-2 ${currentCarouselPhoto.client_comment ? 'btn-info text-white' : 'btn-light'}`}
                                 >
                                     <MessageSquare size={16} /> Note
@@ -351,7 +356,7 @@ export default function Show({ gallery }: Props) {
                         <div className="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
                             <div className="row g-0">
                                 <div className="col-4">
-                                    <img src={editingPhoto.full_url} className="img-fluid h-100 object-fit-cover" alt="" />
+                                    <img src={editingPhoto.full_url} className="img-fluid h-100 object-fit-cover" style={{ pointerEvents: 'none' }} alt="" />
                                 </div>
                                 <div className="col-8 p-4">
                                     <h5 className="fw-bold mb-1">Notes de retouche</h5>
@@ -382,9 +387,7 @@ export default function Show({ gallery }: Props) {
 
             <style>{`
                 .no-select { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
-                /* ── Correction : no-drag sur img uniquement, pas pointer-events global ── */
                 .no-drag { -webkit-user-drag:none; }
-                img.no-drag { pointer-events:none !important; }
                 @media print { body { display:none !important; } }
 
                 .bg-purple-light-soft { background-color:#fdfaff; }
@@ -404,7 +407,7 @@ export default function Show({ gallery }: Props) {
                 @keyframes spin { to { transform:rotate(360deg); } }
                 .photo-card-client { transition:transform 0.2s ease,box-shadow 0.2s ease; }
                 .photo-card-client:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(168,85,247,0.15)!important; }
-                .sidebar-thumb { transition:transform 0.15s ease; }
+                .sidebar-thumb { transition:transform 0.15s ease; cursor:pointer; }
                 .sidebar-thumb:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
 
                 /* Carousel */

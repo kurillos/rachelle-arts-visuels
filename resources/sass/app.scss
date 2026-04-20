@@ -658,14 +658,8 @@ img {
     -webkit-user-drag: none;
 }
 
-// ── CORRECTION CAROUSEL : les images bloquent les pointer-events
-//    mais pas les conteneurs cliquables ──
-img.no-drag {
-    pointer-events: none !important;
-}
-
+// ── GALERIE CLIENT : design et transitions ──
 .photo-card-client {
-    pointer-events: auto !important;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
@@ -675,21 +669,13 @@ img.no-drag {
     }
 }
 
-// ── FIX CAROUSEL : forcer pointer-events sur les wrappers cliquables ──
+// ── Tous les clics fonctionnent naturellement, les images draggables bloquées via user-drag ──
 .client-gallery-root {
-    .position-relative {
-        pointer-events: auto !important;
-    }
 
-    // Les images à l'intérieur restent non-cliquables (protection)
-    .position-relative>img {
-        pointer-events: none !important;
-    }
-
-    // Tous les boutons restent cliquables
+    // Les boutons restent cliquables (défaut du navigateur)
     button,
     .btn {
-        pointer-events: auto !important;
+        cursor: pointer;
     }
 }
 
