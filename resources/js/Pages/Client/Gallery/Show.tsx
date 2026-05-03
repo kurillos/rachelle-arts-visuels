@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Head, router } from '@inertiajs/react';
 import {
     Heart, X, ShoppingCart, Clock, MessageSquare,
-    Send, ChevronRight, ChevronLeft, ShieldCheck, Check, Loader2
+    Send, ChevronRight, ChevronLeft, ShieldCheck, Check, Loader2,
+    AlertTriangle
 } from 'lucide-react';
 // @ts-ignore
 import { route } from 'ziggy-js';
@@ -39,6 +40,20 @@ export default function Show({ gallery }: Props) {
     const [loadingFavorite, setLoadingFavorite] = useState<number | null>(null);
     const [validating, setValidating] = useState(false);
 
+    // ── Modale de confirmation custom ────────────────────────────────────────
+    const [confirmModal, setConfirmModal] = useState<{
+        visible: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({ visible: false, title: '', message: '', onConfirm: () => {} });
+
+    const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+        setConfirmModal({ visible: true, title, message, onConfirm });
+    };
+
+    const closeConfirm = () => setConfirmModal(prev => ({ ...prev, visible: false }));
+
     // ── Carousel / Lightbox ──────────────────────────────────────────────────
     const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
@@ -55,7 +70,6 @@ export default function Show({ gallery }: Props) {
         setCarouselIndex((carouselIndex + 1) % photos.length);
     }, [carouselIndex, photos.length]);
 
-    // Navigation clavier dans le carousel
     useEffect(() => {
         if (carouselIndex === null) return;
         const handler = (e: KeyboardEvent) => {
@@ -84,7 +98,11 @@ export default function Show({ gallery }: Props) {
                 (e.metaKey && ['p', 's'].includes(e.key))
             ) {
                 e.preventDefault();
-                alert('🔒 Le téléchargement est désactivé pour protéger les droits d\'auteur.');
+                showConfirm(
+                    '🔒 Action bloquée',
+                    "Le téléchargement est désactivé pour protéger les droits d'auteur de Rachelle Arts Visuels.",
+                    () => {}
+                );
             }
         };
         const noCtx = (e: MouseEvent) => e.preventDefault();
@@ -146,9 +164,16 @@ export default function Show({ gallery }: Props) {
 
     // ── Validation ───────────────────────────────────────────────────────────
     const validateSelection = () => {
-        if (!confirm(`Valider votre sélection de ${selections.length} photo(s) ?\n\nCette action est définitive.`)) return;
-        setValidating(true);
-        router.post(route('client.gallery.validate', gallery.slug), {}, { onFinish: () => setValidating(false) });
+        showConfirm(
+            'Valider votre sélection ?',
+            `Vous êtes sur le point de valider ${selections.length} photo(s). Cette action est définitive et ne pourra pas être annulée.`,
+            () => {
+                setValidating(true);
+                router.post(route('client.gallery.validate', gallery.slug), {}, {
+                    onFinish: () => setValidating(false)
+                });
+            }
+        );
     };
 
     const currentCarouselPhoto = carouselIndex !== null ? photos[carouselIndex] : null;
@@ -261,7 +286,7 @@ export default function Show({ gallery }: Props) {
                             )}
                         </div>
 
-                        <div className="flex-grow-1 overflow-auto p-3">
+                        <div className="overflow-auto p-3" style={{ flexGrow: 1, maxHeight: 'calc(100vh - 280px)' }}>
                             {selections.length === 0 ? (
                                 <p className="text-muted small text-center mt-4">Cliquez sur ❤️ pour ajouter des photos.</p>
                             ) : (
@@ -385,6 +410,37 @@ export default function Show({ gallery }: Props) {
                 </div>
             )}
 
+            {/* ── MODALE CONFIRMATION CUSTOM ──────────────────────────────── */}
+            {confirmModal.visible && (
+                <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.65)', zIndex: 2100 }}>
+                    <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '420px' }}>
+                        <div className="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                            <div className="p-4 text-white d-flex align-items-center gap-3" style={{ background: 'linear-gradient(135deg, #AA11DD, #9333ea)' }}>
+                                <div className="rounded-circle bg-white d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 42, height: 42 }}>
+                                    <AlertTriangle size={22} style={{ color: '#AA11DD' }} />
+                                </div>
+                                <h5 className="mb-0 fw-bold">{confirmModal.title}</h5>
+                            </div>
+                            <div className="p-4">
+                                <p className="text-muted mb-0" style={{ lineHeight: 1.6 }}>{confirmModal.message}</p>
+                            </div>
+                            <div className="px-4 pb-4 d-flex gap-3 justify-content-end">
+                                <button onClick={closeConfirm} className="btn btn-light px-4 rounded-pill">
+                                    Annuler
+                                </button>
+                                <button
+                                    onClick={() => { closeConfirm(); confirmModal.onConfirm(); }}
+                                    className="btn rounded-pill px-4 fw-bold text-white d-flex align-items-center gap-2"
+                                    style={{ background: 'linear-gradient(135deg, #AA11DD, #9333ea)' }}
+                                >
+                                    <Check size={16} /> Confirmer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <style>{`
                 .no-select { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
                 .no-drag { -webkit-user-drag:none; }
@@ -410,7 +466,6 @@ export default function Show({ gallery }: Props) {
                 .sidebar-thumb { transition:transform 0.15s ease; cursor:pointer; }
                 .sidebar-thumb:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
 
-                /* Carousel */
                 .carousel-overlay {
                     position:fixed; inset:0;
                     background:rgba(0,0,0,0.92);
