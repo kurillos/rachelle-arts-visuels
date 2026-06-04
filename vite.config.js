@@ -8,7 +8,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/sass/app.scss',
-                'resources/js/app.jsx',
+                'resources/js/app.tsx',
             ],
             refresh: true,
         }),
@@ -17,6 +17,17 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'resources/js'),
+        },
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'react-vendor': ['react', 'react-dom'],
+                    'inertia-vendor': ['@inertiajs/react'],
+                    'bootstrap-vendor': ['bootstrap'],
+                },
+            },
         },
     },
     server: {

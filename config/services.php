@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'umami' => [
+        'api_key'    => env('UMAMI_API_KEY'),
+        'website_id' => env('UMAMI_WEBSITE_ID'),
+    ],
+
 ];
