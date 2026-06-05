@@ -11,7 +11,8 @@ import {
     Settings,
     Tag,
     PenTool, // Icône ajoutée pour le graphisme
-    Globe
+    Globe,
+    BarChart2
 } from 'lucide-react';
 
 declare var route: any;
@@ -104,6 +105,13 @@ export default function AuthenticatedLayout({ auth, children }: Props) {
                             <Link href={route('admin.offers.index')} 
                                 className={`nav-link-admin ${url.startsWith('/admin/offers') ? 'active' : ''}`}>
                                 <Tag size={18} className="me-3" /> Mes Offres & Quotas
+                            </Link>
+                        </li>
+
+                        <li className="mb-2">
+                            <Link href={route('admin.stats')} 
+                                className={`nav-link-admin ${url.startsWith('/stats') ? 'active' : ''}`}>
+                                <BarChart2 size={18} className="me-3" /> Statistiques
                             </Link>
                         </li>
 
