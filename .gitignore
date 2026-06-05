@@ -26,4 +26,4 @@ Thumbs.db
 
 .env copy
 *.sql
-/public/build
+

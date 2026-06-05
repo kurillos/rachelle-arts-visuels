@@ -1,0 +1,1 @@
+import{j as s}from"./app-C2ZBQDSZ.js";import{N as o,F as r}from"./Footer-CwCJafVe.js";function t({children:a}){return s.jsxs("div",{className:"min-vh-100 d-flex flex-column",children:[s.jsx(o,{}),s.jsx("main",{className:"flex-grow-1",children:a}),s.jsx(r,{})]})}export{t as G};
