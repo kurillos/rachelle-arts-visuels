@@ -53,14 +53,15 @@ class PublicImageController extends Controller
                 $logoPath = public_path('images/logo.png');
                 if (file_exists($logoPath)) {
                     $watermark = $manager->read($logoPath);
-                    $watermark->scale(width: 250); 
+                    $watermark = $manager->read($logoPath);
+                    $watermark->scale(width: 600);
 
                     $image->place(
-                        $watermark, 
-                        'top-right', 
-                        offset_x: 40, 
-                        offset_y: 40, 
-                        opacity: 30
+                        $watermark,
+                        'center',
+                        offset_x: 0,
+                        offset_y: 0,
+                        opacity: 20
                     );
                 }
 
