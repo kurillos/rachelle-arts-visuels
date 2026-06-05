@@ -27,7 +27,7 @@ Route::put('/carousels/{carousel}', [CarouselApiController::class, 'update']);
 Route::delete('/carousels/{carousel}', [CarouselApiController::class, 'destroy']);
 Route::post('/api/contact', [ContactController::class, 'send'])->name('contact.send');
 
-Route::middleware('auth:sanctum')->prefix('stats')->group(function () {
+Route::middleware('auth')->prefix('stats')->group(function () {
     Route::get('/summary',   [App\Http\Controllers\Api\StatsController::class, 'summary']);
     Route::get('/pageviews', [App\Http\Controllers\Api\StatsController::class, 'pageviews']);
     Route::get('/pages',     [App\Http\Controllers\Api\StatsController::class, 'pages']);
