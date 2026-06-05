@@ -151,7 +151,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/stats', function () {
             return Inertia::render('Admin/Stats');
         })->name('admin.stats');
+        });
     });
+
+    // Dans le groupe auth, HORS du prefix('admin')
+    Route::prefix('api/stats')->group(function () {
+        Route::get('/summary',   [App\Http\Controllers\Api\StatsController::class, 'summary']);
+        Route::get('/pageviews', [App\Http\Controllers\Api\StatsController::class, 'pageviews']);
+        Route::get('/pages',     [App\Http\Controllers\Api\StatsController::class, 'pages']);
+        Route::get('/devices',   [App\Http\Controllers\Api\StatsController::class, 'devices']);
+        Route::get('/countries', [App\Http\Controllers\Api\StatsController::class, 'countries']);
 });
 
 require __DIR__ . '/auth.php';

@@ -27,6 +27,9 @@ class StatsController extends Controller
 
     public function summary()
     {
+
+        \Log::info('Umami key: ' . $this->apiKey);
+        \Log::info('Umami website: ' . $this->websiteId);
         $end   = now()->timestamp * 1000;
         $start = now()->subDays(30)->timestamp * 1000;
 
