@@ -66,9 +66,15 @@ export default function Index({ auth, offers }: Props) {
                     {offers.map((offer) => (
                         <div key={offer.id} className="col-md-6 col-lg-4">
                             <div className="card admin-card border-0 shadow-sm h-100 overflow-hidden">
-                                <div className="card-header bg-purple text-white p-3 border-0 d-flex justify-content-between align-items-center">
+                                <div className="card-header p-3 border-0 d-flex justify-content-between align-items-center" style={{ background: '#AA11DD', color: 'white' }}>
                                     <h5 className="mb-0 fw-bold">{offer.name}</h5>
-                                    <button onClick={() => deleteOffer(offer.id)} className="btn btn-link text-white p-0 opacity-75 hover-opacity-100">
+                                    <button 
+                                        onClick={() => deleteOffer(offer.id)} 
+                                        className="btn btn-link p-0"
+                                        style={{ color: 'white', transition: 'color 0.2s' }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = 'white')}
+                                    >
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
@@ -93,7 +99,7 @@ export default function Index({ auth, offers }: Props) {
                                             </div>
                                         </div>
                                     )}
-                                    <p className="text-muted small mt-3 mb-0 border-top pt-3">
+                                    <p className="small mt-3 mb-0 border-top pt-3" style={{ color: 'black' }}>
                                         {offer.description || 'Aucune description.'}
                                     </p>
                                 </div>
