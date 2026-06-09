@@ -8,13 +8,14 @@ export default function Welcome({ auth, carousels = [] }: { auth: any, carousels
 
     useEffect(() => {
     if (carouselRef.current && carousels.length > 0) {
-        const bootstrapCarousel = new window.bootstrap.Carousel(carouselRef.current, {
-            interval: 2000,
-            ride: 'carousel',
-            wrap: true,
+        import('bootstrap').then(({ Carousel }) => {
+            const carousel = new Carousel(carouselRef.current!, {
+                interval: 2000,
+                ride: 'carousel',
+                wrap: true,
+            });
+            carousel.cycle();
         });
-        bootstrapCarousel.cycle();
-        return () => bootstrapCarousel.dispose();
     }
 }, [carousels]);
 
