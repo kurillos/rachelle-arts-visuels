@@ -2,23 +2,21 @@ import { Head } from '@inertiajs/react';
 import Navbar from '@/Components/Custom/Navbar';
 import Footer from '@/Components/Custom/Footer';
 import { useEffect, useRef } from 'react';
-import { Carousel } from 'bootstrap';
 
 export default function Welcome({ auth, carousels = [] }: { auth: any, carousels: any[] }) {
     const carouselRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (carouselRef.current && carousels.length > 0) {
-            // @ts-ignore
-            const carousel = new Carousel(carouselRef.current, {
-                interval: 2000,
-                ride: 'carousel',
-                wrap: true,
-            });
-            carousel.cycle();
-            return () => carousel.dispose();
-        }
-    }, [carousels]);
+    if (carouselRef.current && carousels.length > 0) {
+        const bootstrapCarousel = new window.bootstrap.Carousel(carouselRef.current, {
+            interval: 2000,
+            ride: 'carousel',
+            wrap: true,
+        });
+        bootstrapCarousel.cycle();
+        return () => bootstrapCarousel.dispose();
+    }
+}, [carousels]);
 
     return (
         <>
