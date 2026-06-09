@@ -9,7 +9,7 @@ export default function Welcome({ auth, carousels = [] }: { auth: any, carousels
             <Head title="Rachelle Conception Visuelle et Photographie" />
             <Navbar auth={auth} />
             <main className="flex-grow-1">
-                <div id="mainCarousel" className="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+                <div id="mainCarousel" className="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000">
                     <div className="carousel-inner">
                         {carousels.map((img, index) => (
                             <div key={img.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
