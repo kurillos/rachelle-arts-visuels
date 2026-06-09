@@ -1,15 +1,34 @@
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Components/Custom/Navbar';
 import Footer from '@/Components/Custom/Footer';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export default function Welcome({ auth, carousels = [] }: { auth: any, carousels: any[] }) {
+    const carouselRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (carouselRef.current && carousels.length > 0) {
+            // @ts-ignore
+            const carousel = new window.bootstrap.Carousel(carouselRef.current, {
+                interval: 2000,
+                ride: 'carousel',
+                wrap: true,
+            });
+            carousel.cycle();
+            return () => carousel.dispose();
+        }
+    }, [carousels]);
+
     return (
         <>
             <Head title="Rachelle Conception Visuelle et Photographie" />
             <Navbar auth={auth} />
             <main className="flex-grow-1">
-                <div id="mainCarousel" className="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000">
+                <div
+                    id="mainCarousel"
+                    ref={carouselRef}
+                    className="carousel slide carousel-fade"
+                >
                     <div className="carousel-inner">
                         {carousels.map((img, index) => (
                             <div key={img.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
